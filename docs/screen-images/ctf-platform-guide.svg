@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <!-- Main background -->
+  <rect width="1200" height="900" fill="#f8f9fa" />
+  
+  <!-- Header navigation bar -->
+  <rect x="0" y="0" width="1200" height="60" fill="#343a40" />
+  
+  <!-- Logo -->
+  <rect x="20" y="15" width="30" height="30" rx="5" fill="#61afef" />
+  <text x="60" y="35" font-family="Arial" font-size="18" font-weight="bold" fill="white">CTF Platform</text>
+  
+  <!-- Navigation items -->
+  <text x="220" y="35" font-family="Arial" font-size="16" fill="white">Dashboard</text>
+  <text x="350" y="35" font-family="Arial" font-size="16" fill="white">Challenges</text>
+  <text x="470" y="35" font-family="Arial" font-size="16" fill="white">Leaderboard</text>
+  <text x="600" y="35" font-family="Arial" font-size="16" fill="white">Teams</text>
+  
+  <!-- User profile -->
+  <circle cx="1140" cy="30" r="20" fill="#6c757d" />
+  <text x="1140" y="35" font-family="Arial" font-size="14" fill="white" text-anchor="middle">JD</text>
+  <text x="1090" y="35" font-family="Arial" font-size="16" fill="white">johndoe</text>
+  
+  <!-- Challenge environment area -->
+  <rect x="20" y="80" width="1160" height="800" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  
+  <!-- Challenge name and status bar -->
+  <rect x="20" y="80" width="1160" height="60" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="40" y="120" font-family="Arial" font-size="20" font-weight="bold" fill="#212529">SQL Injection Challenge</text>
+  
+  <!-- Status badges -->
+  <rect x="850" y="96" width="80" height="28" rx="14" fill="#28a745" />
+  <text x="890" y="115" font-family="Arial" font-size="14" font-weight="bold" fill="white" text-anchor="middle">ACTIVE</text>
+  
+  <!-- Timer -->
+  <text x="950" y="120" font-family="Arial" font-size="16" fill="#212529">03:45:12</text>
+  
+  <!-- Challenge tabs -->
+  <rect x="20" y="140" width="1160" height="50" rx="0" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  
+  <rect x="40" y="150" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="115" y="170" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Description</text>
+  
+  <rect x="200" y="150" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="275" y="170" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Resources</text>
+  
+  <rect x="360" y="150" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="435" y="170" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Terminal</text>
+  
+  <rect x="520" y="150" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="595" y="170" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Hints</text>
+  
+  <rect x="680" y="150" width="150" height="30" rx="5" fill="#007bff" />
+  <text x="755" y="170" font-family="Arial" font-size="16" font-weight="bold" fill="white" text-anchor="middle">Guide</text>
+  
+  <!-- Main content area - Guide content -->
+  <rect x="40" y="210" width="830" height="640" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="70" y="240" font-family="Arial" font-size="24" font-weight="bold" fill="#212529">SQL Injection Guide</text>
+  
+  <!-- Learning objectives section -->
+  <text x="70" y="280" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Learning Objectives</text>
+  <rect x="70" y="290" width="180" height="3" fill="#007bff" />
+  
+  <rect x="70" y="310" width="770" height="100" rx="5" fill="#f8f9fa" />
+  <text x="90" y="335" font-family="Arial" font-size="14" fill="#212529">✓ Understand how SQL injection vulnerabilities occur in web applications</text>
+  <text x="90" y="365" font-family="Arial" font-size="14" fill="#212529">✓ Learn techniques to identify SQL injection entry points</text>
+  <text x="90" y="395" font-family="Arial" font-size="14" fill="#212529">✓ Practice exploiting SQL injection to access unauthorized data</text>
+  
+  <!-- What is SQL Injection section -->
+  <text x="70" y="450" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">What is SQL Injection?</text>
+  <rect x="70" y="460" width="180" height="3" fill="#007bff" />
+  
+  <text x="70" y="490" font-family="Arial" font-size="14" fill="#212529">SQL Injection is a code injection technique that exploits vulnerabilities in applications that</text>
+  <text x="70" y="515" font-family="Arial" font-size="14" fill="#212529">interact with databases. It occurs when user-supplied data is not properly validated and</text>
+  <text x="70" y="540" font-family="Arial" font-size="14" fill="#212529">directly included in SQL queries. This allows attackers to manipulate the query's logic and</text>
+  <text x="70" y="565" font-family="Arial" font-size="14" fill="#212529">potentially access, modify, or delete data they shouldn't have access to.</text>
+  
+  <!-- Code example -->
+  <rect x="70" y="590" width="770" height="120" rx="5" fill="#282c34" />
+  <text x="90" y="615" font-family="Courier New" font-size="14" fill="#e6f0ff">// Vulnerable code example</text>
+  <text x="90" y="640" font-family="Courier New" font-size="14" fill="#4ec9b0">$query</text>
+  <text x="150" y="640" font-family="Courier New" font-size="14" fill="#cccccc"> = "SELECT * FROM users WHERE username = '" . </text>
+  <text x="580" y="640" font-family="Courier New" font-size="14" fill="#9cdcfe">$username</text>
+  <text x="650" y="640" font-family="Courier New" font-size="14" fill="#cccccc"> . "'";</text>
+  <text x="90" y="665" font-family="Courier New" font-size="14" fill="#cccccc">// If $username = </text>
+  <text x="220" y="665" font-family="Courier New" font-size="14" fill="#ce9178">'admin\' OR 1=1 --'</text>
+  <text x="390" y="665" font-family="Courier New" font-size="14" fill="#cccccc">, query becomes:</text>
+  <text x="90" y="690" font-family="Courier New" font-size="14" fill="#cccccc">// SELECT * FROM users WHERE username = 'admin' OR 1=1 --'</text>
+  
+  <!-- Steps for exploiting section -->
+  <text x="70" y="750" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Steps for Exploiting SQL Injection</text>
+  <rect x="70" y="760" width="240" height="3" fill="#007bff" />
+  
+  <rect x="70" y="780" width="20" height="20" rx="10" fill="#007bff" />
+  <text x="80" y="795" font-family="Arial" font-size="14" font-weight="bold" fill="white">1</text>
+  <text x="100" y="795" font-family="Arial" font-size="14" fill="#212529" font-weight="bold">Identify potential injection points</text>
+  
+  <rect x="70" y="810" width="770" height="30" rx="5" fill="#f8f9fa" />
+  <text x="90" y="830" font-family="Arial" font-size="14" fill="#212529">Look for forms, search boxes, and URL parameters that might interact with a database.</text>
+  
+  <!-- Right sidebar -->
+  <rect x="890" y="210" width="290" height="640" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  
+  <!-- Table of contents -->
+  <text x="910" y="240" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Contents</text>
+  <rect x="910" y="250" width="250" height="2" fill="#dee2e6" />
+  
+  <text x="910" y="280" font-family="Arial" font-size="16" fill="#007bff" font-weight="bold">Learning Objectives</text>
+  <text x="910" y="310" font-family="Arial" font-size="16" fill="#212529">What is SQL Injection?</text>
+  <text x="910" y="340" font-family="Arial" font-size="16" fill="#212529">Steps for Exploiting SQL Injection</text>
+  <text x="910" y="370" font-family="Arial" font-size="16" fill="#212529">Testing for Vulnerabilities</text>
+  <text x="910" y="400" font-family="Arial" font-size="16" fill="#212529">Advanced Techniques</text>
+  <text x="910" y="430" font-family="Arial" font-size="16" fill="#212529">Mitigation Strategies</text>
+  <text x="910" y="460" font-family="Arial" font-size="16" fill="#212529">Further Resources</text>
+  
+  <!-- Read progress -->
+  <text x="910" y="510" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Your Progress</text>
+  <rect x="910" y="520" width="250" height="2" fill="#dee2e6" />
+  
+  <rect x="910" y="540" width="250" height="10" rx="5" fill="#e9ecef" />
+  <rect x="910" y="540" width="75" height="10" rx="5" fill="#007bff" />
+  <text x="910" y="565" font-family="Arial" font-size="14" fill="#6c757d">30% Complete</text>
+  
+  <!-- Practical tools section -->
+  <text x="910" y="605" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Useful Commands</text>
+  <rect x="910" y="615" width="250" height="2" fill="#dee2e6" />
+  
+  <rect x="910" y="635" width="250" height="80" rx="5" fill="#343a40" />
+  <text x="925" y="655" font-family="Courier New" font-size="12" fill="#cccccc"># Basic SQL injection test</text>
+  <text x="925" y="675" font-family="Courier New" font-size="12" fill="#cccccc">curl -X GET "http://web-server/</text>
+  <text x="925" y="695" font-family="Courier New" font-size="12" fill="#cccccc">search.php?query=test'%20OR%20'1'='1"</text>
+  
+  <rect x="910" y="725" width="125" height="30" rx="5" fill="#28a745" />
+  <text x="973" y="745" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Copy Command</text>
+  
+  <!-- Video tutorial button -->
+  <rect x="910" y="775" width="250" height="50" rx="5" fill="#f8f9fa" stroke="#007bff" stroke-width="2" />
+  <text x="1035" y="805" font-family="Arial" font-size="14" font-weight="bold" fill="#007bff" text-anchor="middle">Watch SQL Injection Tutorial</text>
+</svg>

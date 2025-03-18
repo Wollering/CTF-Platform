@@ -1,0 +1,790 @@
+// handlers/challengeValidator.js
+// This Lambda function validates challenge submissions
+
+const AWS = require('aws-sdk');
+const dynamodb = new AWS.DynamoDB.DocumentClient();
+const lambda = new AWS.Lambda();
+
+/**
+ * Validates a challenge submission
+ * 
+ * This Lambda function receives a submission from the participant (either an individual or team)
+ * and determines if they have successfully completed the challenge. It invokes challenge-specific
+ * validation logic, records the attempt, and updates scores if successful.
+ */
+module.exports.handler = async (event) => {
+  try {
+    // Parse request body
+    const { userId, teamId, challengeId, environmentId, submission } = JSON.parse(event.body);
+    
+    console.log(`Validating submission for challenge ${challengeId} from user ${userId}`);
+    
+    // Validate required parameters
+    if (!userId || !challengeId || !submission) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ 
+          error: 'Missing required parameters',
+          requiredParams: ['userId', 'challengeId', 'submission']
+        })
+      };
+    }
+    
+    // Get challenge details to determine validation strategy
+    const challengeResult = await dynamodb.get({
+      TableName: process.env.CHALLENGES_TABLE,
+      Key: { challengeId }
+    }).promise();
+    
+    const challenge = challengeResult.Item;
+    if (!challenge) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ error: 'Challenge not found' })
+      };
+    }
+    
+    // Ensure the challenge is active
+    if (!challenge.isActive) {
+      return {
+        statusCode: 403,
+        body: JSON.stringify({ error: 'This challenge is not currently active' })
+      };
+    }
+    
+    // Check if user has already completed this challenge
+    const previousSubmissions = await dynamodb.query({
+      TableName: process.env.SUBMISSIONS_TABLE,
+      IndexName: 'UserChallengeIndex',
+      KeyConditionExpression: 'userId = :userId AND challengeId = :challengeId',
+      ExpressionAttributeValues: {
+        ':userId': userId,
+        ':challengeId': challengeId
+      },
+      FilterExpression: 'status = :status',
+      ExpressionAttributeValues: {
+        ':status': 'correct'
+      }
+    }).promise();
+    
+    if (previousSubmissions.Items && previousSubmissions.Items.length > 0) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: false,
+          message: 'You have already completed this challenge',
+          previousSubmission: previousSubmissions.Items[0]
+        })
+      };
+    }
+    
+    // Get environment details if an environment ID was provided
+    let environment = null;
+    if (environmentId) {
+      const envResult = await dynamodb.get({
+        TableName: process.env.ENVIRONMENTS_TABLE,
+        Key: { environmentId }
+      }).promise();
+      
+      environment = envResult.Item;
+      
+      // Verify environment ownership and validity
+      if (!environment) {
+        return {
+          statusCode: 404,
+          body: JSON.stringify({ error: 'Environment not found' })
+        };
+      }
+      
+      if (environment.userId !== userId || (teamId && environment.teamId !== teamId)) {
+        return {
+          statusCode: 403,
+          body: JSON.stringify({ error: 'Access denied to this environment' })
+        };
+      }
+      
+      if (environment.status !== 'active') {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: `Environment is in '${environment.status}' state and not active` })
+        };
+      }
+    }
+    
+    // Invoke the challenge-specific validation function
+    // This allows for custom validation logic per challenge type
+    let validationFunction = challenge.validationStrategy;
+    if (!validationFunction) {
+      // Default to a simple string match if no specific strategy is defined
+      validationFunction = 'defaultChallengeValidator';
+    }
+    
+    const validationParams = {
+      submission,
+      challengeId,
+      userId,
+      teamId: teamId || null,
+      environmentId: environmentId || null,
+      // If the challenge has a specific expected answer, include it
+      expectedAnswer: challenge.answer || null,
+      // Pass additional validation parameters defined in the challenge
+      validationParams: challenge.validationParams || {}
+    };
+    
+    console.log(`Invoking validation function: ${validationFunction}`);
+    
+    const validationResult = await lambda.invoke({
+      FunctionName: validationFunction,
+      Payload: JSON.stringify(validationParams)
+    }).promise();
+    
+    // Parse the validation result
+    const validation = JSON.parse(validationResult.Payload);
+    
+    // Record this submission attempt
+    const submissionId = `sub-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const timestamp = new Date().toISOString();
+    
+    // Calculate time taken if we have an environment
+    let timeTaken = null;
+    if (environment) {
+      timeTaken = (new Date(timestamp).getTime() - new Date(environment.createdAt).getTime()) / 1000;
+    }
+    
+    // Get hints used
+    let hintsUsed = 0;
+    if (environment) {
+      const hintsResult = await dynamodb.query({
+        TableName: process.env.HINTS_USAGE_TABLE,
+        IndexName: 'UserChallengeIndex',
+        KeyConditionExpression: 'userId = :userId AND challengeId = :challengeId',
+        ExpressionAttributeValues: {
+          ':userId': userId,
+          ':challengeId': challengeId
+        }
+      }).promise();
+      
+      hintsUsed = hintsResult.Items ? hintsResult.Items.length : 0;
+    }
+    
+    // Calculate points based on hints used and time taken
+    let pointsAwarded = 0;
+    if (validation.success) {
+      // Base points from the challenge
+      pointsAwarded = challenge.points;
+      
+      // Apply penalty for hints used (if configured)
+      if (challenge.hintPenalty && hintsUsed > 0) {
+        const hintPenaltyAmount = challenge.hintPenalty * hintsUsed;
+        pointsAwarded = Math.max(0, pointsAwarded - hintPenaltyAmount);
+      }
+      
+      // Apply time bonus/penalty (if configured)
+      if (challenge.timeBonusMinutes && timeTaken !== null) {
+        const minutesTaken = timeTaken / 60;
+        if (minutesTaken < challenge.timeBonusMinutes) {
+          // Time bonus for quick completion
+          const timeBonus = Math.floor((challenge.timeBonusMinutes - minutesTaken) * (challenge.timeBonusPoints || 10));
+          pointsAwarded += timeBonus;
+        }
+      }
+    }
+    
+    // Record the submission
+    await dynamodb.put({
+      TableName: process.env.SUBMISSIONS_TABLE,
+      Item: {
+        submissionId,
+        challengeId,
+        userId,
+        teamId: teamId || null,
+        timestamp,
+        status: validation.success ? 'correct' : 'incorrect',
+        attempt: submission,
+        points: pointsAwarded,
+        timeTaken: timeTaken || null,
+        hintsUsed,
+        environmentId: environmentId || null,
+        validationDetails: validation.details || null
+      }
+    }).promise();
+    
+    // If successful, update user/team score and mark challenge as completed
+    if (validation.success) {
+      console.log(`Challenge ${challengeId} completed by user ${userId} with ${pointsAwarded} points`);
+      
+      // Update user score and completed challenges
+      await dynamodb.update({
+        TableName: process.env.USERS_TABLE,
+        Key: { userId },
+        UpdateExpression: 'ADD points :points, completedChallenges :challenge',
+        ExpressionAttributeValues: {
+          ':points': pointsAwarded,
+          ':challenge': dynamodb.createSet([challengeId])
+        }
+      }).promise();
+      
+      // Update team score and completed challenges if applicable
+      if (teamId) {
+        await dynamodb.update({
+          TableName: process.env.TEAMS_TABLE,
+          Key: { teamId },
+          UpdateExpression: 'ADD points :points, completedChallenges :challenge',
+          ExpressionAttributeValues: {
+            ':points': pointsAwarded,
+            ':challenge': dynamodb.createSet([challengeId])
+          }
+        }).promise();
+      }
+      
+      // Update challenge statistics
+      await dynamodb.update({
+        TableName: process.env.CHALLENGES_TABLE,
+        Key: { challengeId },
+        UpdateExpression: 'ADD completions :one, totalPoints :points SET avgCompletionTime = :avgTime',
+        ExpressionAttributeValues: {
+          ':one': 1,
+          ':points': pointsAwarded,
+          ':avgTime': timeTaken || 0 // This is simplified; a real implementation would calculate a true average
+        }
+      }).promise();
+    }
+    
+    // Return validation result to the client
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        success: validation.success,
+        message: validation.message,
+        points: pointsAwarded,
+        submissionId,
+        details: validation.details || null
+      })
+    };
+  } catch (error) {
+    console.error('Error validating challenge:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ 
+        error: 'Failed to validate challenge submission',
+        message: error.message
+      })
+    };
+  }
+};
+
+// handlers/defaultChallengeValidator.js
+// Default validator that compares the submission to an expected answer
+
+/**
+ * Default challenge validator that compares the submission against an expected answer
+ * This is used for simple flag-based challenges that don't require complex validation
+ */
+module.exports.handler = async (event) => {
+  try {
+    const { submission, expectedAnswer, challengeId } = event;
+    
+    // Simple case-sensitive string comparison
+    const isCorrect = submission === expectedAnswer;
+    
+    return {
+      success: isCorrect,
+      message: isCorrect 
+        ? 'Congratulations! You have successfully completed this challenge.' 
+        : 'Incorrect submission. Please try again.',
+      details: {
+        challengeId,
+        submissionFormat: expectedAnswer ? `Format: ${expectedAnswer.replace(/[a-zA-Z0-9]/g, 'X')}` : null
+      }
+    };
+  } catch (error) {
+    console.error('Error in default validator:', error);
+    return {
+      success: false,
+      message: 'An error occurred during validation',
+      details: {
+        error: error.message
+      }
+    };
+  }
+};
+
+// handlers/sqlInjectionValidator.js
+// Example of a specialized validator for SQL injection challenges
+
+/**
+ * SQL Injection challenge validator
+ * Validates completion of a SQL injection challenge by:
+ * 1. Checking database logs for SQL injection attempts
+ * 2. Verifying access to protected database tables
+ * 3. Confirming the flag submission matches the expected pattern
+ */
+module.exports.handler = async (event) => {
+  try {
+    const { submission, challengeId, environmentId } = event;
+    
+    // Validate submission format (CTF{...})
+    const flagPattern = /^CTF\{[\w_-]+\}$/;
+    if (!flagPattern.test(submission)) {
+      return {
+        success: false,
+        message: 'Incorrect flag format. The flag should be in the format CTF{flag_text}.',
+        details: {
+          hint: 'Look for the flag in sensitive database tables that an administrator might use.'
+        }
+      };
+    }
+    
+    // If we have an environment ID, check for evidence of SQL injection in the logs
+    if (environmentId) {
+      // In a real implementation, this would connect to the challenge environment
+      // and check logs, database access patterns, etc.
+      
+      // For this example, we'll just validate the flag itself
+      const expectedFlag = `CTF{SQLi_M4st3r_${challengeId}}`;
+      const isCorrect = submission === expectedFlag;
+      
+      if (isCorrect) {
+        return {
+          success: true,
+          message: 'Congratulations! You successfully exploited the SQL injection vulnerability and found the flag.',
+          details: {
+            challenge: 'sql-injection',
+            difficulty: 'medium'
+          }
+        };
+      } else {
+        return {
+          success: false,
+          message: 'The flag is incorrect. Keep looking!',
+          details: {
+            hint: 'Have you tried accessing the admin_notes table?'
+          }
+        };
+      }
+    } else {
+      // No environment ID provided, can't validate properly
+      return {
+        success: false,
+        message: 'Cannot validate submission without an active environment.',
+        details: {
+          error: 'Missing environmentId'
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Error in SQL injection validator:', error);
+    return {
+      success: false,
+      message: 'An error occurred during validation',
+      details: {
+        error: error.message
+      }
+    };
+  }
+};
+
+// handlers/webSecurityValidator.js
+// Example of a validator for web security challenges
+
+/**
+ * Web Security Challenge Validator
+ * Validates completion of web security challenges like XSS, CSRF, etc.
+ * Checks for evidence of exploitation in logs and confirms the flag submission
+ */
+module.exports.handler = async (event) => {
+  try {
+    const { submission, challengeId, environmentId, validationParams } = event;
+    
+    // Extract challenge-specific validation parameters
+    const { vulnerabilityType, expectedEvidence } = validationParams || {};
+    
+    // Flag format validation
+    const flagPattern = /^CTF\{[\w_-]+\}$/;
+    if (!flagPattern.test(submission)) {
+      return {
+        success: false,
+        message: 'Incorrect flag format. The flag should be in the format CTF{flag_text}.',
+        details: {
+          hint: 'Make sure you\'re submitting the exact flag found in the challenge.'
+        }
+      };
+    }
+    
+    // In a real implementation, this would:
+    // 1. Connect to the challenge environment
+    // 2. Check logs for evidence of exploitation (e.g., XSS payload execution)
+    // 3. Verify any required actions were taken (e.g., cookie theft, admin action)
+    
+    // For this example, we'll just validate the flag
+    let expectedFlag;
+    let successMessage;
+    
+    switch (vulnerabilityType) {
+      case 'xss':
+        expectedFlag = `CTF{XSS_M4st3r_${challengeId}}`;
+        successMessage = 'Congratulations! You successfully executed a cross-site scripting attack.';
+        break;
+      case 'csrf':
+        expectedFlag = `CTF{CSRF_H4ck3r_${challengeId}}`;
+        successMessage = 'Congratulations! You successfully performed a cross-site request forgery attack.';
+        break;
+      default:
+        expectedFlag = `CTF{W3b_H4ck3r_${challengeId}}`;
+        successMessage = 'Congratulations! You successfully exploited the web security vulnerability.';
+    }
+    
+    const isCorrect = submission === expectedFlag;
+    
+    if (isCorrect) {
+      return {
+        success: true,
+        message: successMessage,
+        details: {
+          challenge: vulnerabilityType || 'web-security',
+          difficulty: validationParams?.difficulty || 'medium'
+        }
+      };
+    } else {
+      return {
+        success: false,
+        message: 'The flag is incorrect. Keep trying!',
+        details: {
+          hint: validationParams?.hint || 'Have you examined all possible attack vectors?'
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Error in web security validator:', error);
+    return {
+      success: false,
+      message: 'An error occurred during validation',
+      details: {
+        error: error.message
+      }
+    };
+  }
+};
+
+// handlers/cryptographyValidator.js
+// Example validator for cryptography challenges
+
+/**
+ * Cryptography Challenge Validator
+ * Validates completion of cryptography challenges including:
+ * - Hash cracking
+ * - Encryption/decryption
+ * - Ciphertext analysis
+ */
+module.exports.handler = async (event) => {
+  try {
+    const { submission, challengeId, validationParams } = event;
+    
+    // Extract challenge-specific parameters
+    const { cryptoType, difficulty } = validationParams || {};
+    
+    // Validate submission format (depends on challenge type)
+    let isCorrect = false;
+    let successMessage = '';
+    let failureMessage = '';
+    
+    switch (cryptoType) {
+      case 'hash-cracking':
+        // For hash cracking, the submission should be the plaintext that produces the target hash
+        const targetHash = validationParams.targetHash;
+        const algorithm = validationParams.algorithm || 'sha256';
+        
+        // In a real implementation, we'd compute the hash of the submission and compare
+        // For this example, we'll use a sample plaintext
+        const expectedPlaintext = validationParams.plaintext || 'password123';
+        isCorrect = submission === expectedPlaintext;
+        
+        successMessage = `Congratulations! You successfully cracked the ${algorithm} hash.`;
+        failureMessage = 'The plaintext is incorrect. Keep trying!';
+        break;
+        
+      case 'encryption':
+        // For encryption challenges, validate the decrypted message
+        const expectedMessage = validationParams.plaintext || `CTF{Crypto_Master_${challengeId}}`;
+        isCorrect = submission === expectedMessage;
+        
+        successMessage = 'Congratulations! You successfully decrypted the message.';
+        failureMessage = 'The decrypted message is incorrect. Check your decryption process.';
+        break;
+        
+      case 'cipher':
+        // For classical ciphers, check the decrypted flag
+        const expectedFlag = validationParams.flag || `CTF{Cipher_Expert_${challengeId}}`;
+        isCorrect = submission === expectedFlag;
+        
+        successMessage = 'Congratulations! You successfully decoded the cipher.';
+        failureMessage = 'The decoded message is incorrect. Have you identified the correct cipher?';
+        break;
+        
+      default:
+        // Generic cryptography challenge
+        const expectedSubmission = validationParams.solution || `CTF{Crypto_${challengeId}}`;
+        isCorrect = submission === expectedSubmission;
+        
+        successMessage = 'Congratulations! You solved the cryptography challenge.';
+        failureMessage = 'Your solution is incorrect. Keep trying!';
+    }
+    
+    if (isCorrect) {
+      return {
+        success: true,
+        message: successMessage,
+        details: {
+          challenge: cryptoType || 'cryptography',
+          difficulty: difficulty || 'medium'
+        }
+      };
+    } else {
+      return {
+        success: false,
+        message: failureMessage,
+        details: {
+          hint: validationParams?.hint || 'Check your approach and try again.'
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Error in cryptography validator:', error);
+    return {
+      success: false,
+      message: 'An error occurred during validation',
+      details: {
+        error: error.message
+      }
+    };
+  }
+};
+
+// handlers/cloudSecurityValidator.js
+// Validator for AWS cloud security challenges
+
+/**
+ * Cloud Security Challenge Validator
+ * Validates cloud security challenges involving:
+ * - IAM policy misconfigurations
+ * - S3 bucket permissions
+ * - Serverless function vulnerabilities
+ * - Cloud service misconfigurations
+ */
+module.exports.handler = async (event) => {
+  try {
+    const { submission, challengeId, environmentId, validationParams } = event;
+    const AWS = require('aws-sdk');
+    
+    // Configure AWS SDK with temporary credentials for the challenge environment
+    // In a real implementation, these would be retrieved securely from a parameter store
+    if (validationParams?.credentials) {
+      AWS.config.update({
+        accessKeyId: validationParams.credentials.accessKeyId,
+        secretAccessKey: validationParams.credentials.secretAccessKey,
+        sessionToken: validationParams.credentials.sessionToken,
+        region: validationParams.region || 'us-east-1'
+      });
+    }
+    
+    // Validate submission format (CTF{...})
+    const flagPattern = /^CTF\{[\w_-]+\}$/;
+    if (!flagPattern.test(submission)) {
+      return {
+        success: false,
+        message: 'Incorrect flag format. The flag should be in the format CTF{flag_text}.',
+        details: {
+          hint: 'The flag is hidden within the cloud resources you need to access.'
+        }
+      };
+    }
+    
+    // Extract challenge details
+    const { cloudService, checkMethod } = validationParams || {};
+    
+    // Validate based on the specific cloud service being tested
+    let isCorrect = false;
+    let successMessage = '';
+    
+    switch (cloudService) {
+      case 's3':
+        // S3 bucket permission challenge
+        // In a real implementation, we would check if the user accessed a protected S3 object
+        const expectedS3Flag = validationParams.flag || `CTF{S3_Security_${challengeId}}`;
+        isCorrect = submission === expectedS3Flag;
+        
+        successMessage = 'Congratulations! You successfully exploited the S3 bucket misconfiguration.';
+        break;
+        
+      case 'iam':
+        // IAM privilege escalation challenge
+        // Check if the user was able to assume a privileged role or access protected resources
+        const expectedIamFlag = validationParams.flag || `CTF{IAM_Escalation_${challengeId}}`;
+        isCorrect = submission === expectedIamFlag;
+        
+        successMessage = 'Congratulations! You successfully performed privilege escalation.';
+        break;
+        
+      case 'lambda':
+        // Lambda function vulnerability challenge
+        // Check if the user was able to exploit a vulnerable Lambda function
+        const expectedLambdaFlag = validationParams.flag || `CTF{Lambda_Exploit_${challengeId}}`;
+        isCorrect = submission === expectedLambdaFlag;
+        
+        successMessage = 'Congratulations! You successfully exploited the Lambda function vulnerability.';
+        break;
+        
+      default:
+        // Generic cloud security challenge
+        const expectedFlag = validationParams.flag || `CTF{Cloud_Security_${challengeId}}`;
+        isCorrect = submission === expectedFlag;
+        
+        successMessage = 'Congratulations! You successfully completed the cloud security challenge.';
+    }
+    
+    // If we have an environment ID and checkMethod, verify the exploitation actually occurred
+    if (environmentId && checkMethod && isCorrect) {
+      // In a real implementation, we would check logs, CloudTrail events, etc.
+      // to verify that the user actually performed the exploit
+      console.log(`Verifying exploitation method: ${checkMethod} for environment ${environmentId}`);
+      
+      // For this example, we'll assume the verification passed
+      const verificationPassed = true;
+      
+      if (!verificationPassed) {
+        return {
+          success: false,
+          message: 'You found the correct flag, but it looks like you didn\'t exploit the vulnerability properly.',
+          details: {
+            hint: 'Make sure you\'re using the intended exploitation method.'
+          }
+        };
+      }
+    }
+    
+    if (isCorrect) {
+      return {
+        success: true,
+        message: successMessage,
+        details: {
+          challenge: cloudService ? `${cloudService}-security` : 'cloud-security',
+          difficulty: validationParams?.difficulty || 'hard'
+        }
+      };
+    } else {
+      return {
+        success: false,
+        message: 'The flag is incorrect. Keep looking!',
+        details: {
+          hint: validationParams?.hint || 'Have you thoroughly examined all cloud resources?'
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Error in cloud security validator:', error);
+    return {
+      success: false,
+      message: 'An error occurred during validation',
+      details: {
+        error: error.message
+      }
+    };
+  }
+};
+
+// handlers/forensicsValidator.js
+// Validator for digital forensics challenges
+
+/**
+ * Digital Forensics Challenge Validator
+ * Validates forensics challenges involving:
+ * - Log analysis
+ * - Memory dumps
+ * - Disk images
+ * - Network packet analysis
+ */
+module.exports.handler = async (event) => {
+  try {
+    const { submission, challengeId, validationParams } = event;
+    
+    // Extract challenge details
+    const { forensicsType, difficulty } = validationParams || {};
+    
+    // Validate submission format (usually a flag or specific finding)
+    let isCorrect = false;
+    let successMessage = '';
+    
+    switch (forensicsType) {
+      case 'log-analysis':
+        // Log analysis challenge
+        // The flag would be hidden in logs and the user needs to find it
+        const expectedLogFlag = validationParams.flag || `CTF{Log_Analyst_${challengeId}}`;
+        isCorrect = submission.trim() === expectedLogFlag;
+        
+        successMessage = 'Congratulations! You successfully analyzed the logs and found the evidence.';
+        break;
+        
+      case 'memory-forensics':
+        // Memory dump analysis
+        // User needs to extract information from a memory dump
+        const expectedMemoryFlag = validationParams.flag || `CTF{Memory_Forensics_${challengeId}}`;
+        isCorrect = submission.trim() === expectedMemoryFlag;
+        
+        successMessage = 'Congratulations! You successfully analyzed the memory dump.';
+        break;
+        
+      case 'disk-forensics':
+        // Disk image analysis
+        // User needs to recover deleted files or find hidden data
+        const expectedDiskFlag = validationParams.flag || `CTF{Disk_Forensics_${challengeId}}`;
+        isCorrect = submission.trim() === expectedDiskFlag;
+        
+        successMessage = 'Congratulations! You successfully recovered the hidden data.';
+        break;
+        
+      case 'network-forensics':
+        // Network packet analysis
+        // User needs to analyze packet captures to find evidence
+        const expectedNetworkFlag = validationParams.flag || `CTF{Network_Forensics_${challengeId}}`;
+        isCorrect = submission.trim() === expectedNetworkFlag;
+        
+        successMessage = 'Congratulations! You successfully analyzed the network traffic.';
+        break;
+        
+      default:
+        // Generic forensics challenge
+        const expectedFlag = validationParams.flag || `CTF{Forensics_${challengeId}}`;
+        isCorrect = submission.trim() === expectedFlag;
+        
+        successMessage = 'Congratulations! You successfully completed the forensics challenge.';
+    }
+    
+    if (isCorrect) {
+      return {
+        success: true,
+        message: successMessage,
+        details: {
+          challenge: forensicsType ? `${forensicsType}` : 'forensics',
+          difficulty: difficulty || 'medium'
+        }
+      };
+    } else {
+      return {
+        success: false,
+        message: 'The flag is incorrect. Keep investigating!',
+        details: {
+          hint: validationParams?.hint || 'Make sure you\'re looking in all the right places.'
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Error in forensics validator:', error);
+    return {
+      success: false,
+      message: 'An error occurred during validation',
+      details: {
+        error: error.message
+      }
+    };
+  }
+};

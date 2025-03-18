@@ -1,0 +1,729 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS Jam-inspired CTF Challenge - Web Application Security'
+
+# This template creates an isolated environment for a web application security challenge
+# It includes a vulnerable web application, required attack vectors, and monitoring
+
+Parameters:
+  ChallengeId:
+    Type: String
+    Description: The unique identifier for this challenge
+  
+  UserId:
+    Type: String
+    Description: The user or team working on this challenge
+  
+  TeamId:
+    Type: String
+    Description: The team ID (if applicable)
+    Default: ''
+  
+  VpcCIDR:
+    Type: String
+    Description: The CIDR block for the VPC
+    Default: 10.0.0.0/16
+  
+  PublicSubnetCIDR:
+    Type: String
+    Description: The CIDR block for the public subnet
+    Default: 10.0.1.0/24
+  
+  PrivateSubnetCIDR:
+    Type: String
+    Description: The CIDR block for the private subnet
+    Default: 10.0.2.0/24
+  
+  EC2InstanceType:
+    Type: String
+    Description: The EC2 instance type for the vulnerable application
+    Default: t3.small
+    AllowedValues:
+      - t3.nano
+      - t3.micro
+      - t3.small
+    ConstraintDescription: Must be a valid EC2 instance type
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Challenge Configuration"
+        Parameters:
+          - ChallengeId
+          - UserId
+          - TeamId
+      - Label:
+          default: "Network Configuration"
+        Parameters:
+          - VpcCIDR
+          - PublicSubnetCIDR
+          - PrivateSubnetCIDR
+      - Label:
+          default: "Compute Configuration"
+        Parameters:
+          - EC2InstanceType
+
+Resources:
+  # VPC and Network Setup
+  ChallengeVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub "ctf-vpc-${ChallengeId}"
+        - Key: Challenge
+          Value: !Ref ChallengeId
+        - Key: User
+          Value: !Ref UserId
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ChallengeVPC
+      CidrBlock: !Ref PublicSubnetCIDR
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select 
+        - 0
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: !Sub "ctf-public-subnet-${ChallengeId}"
+
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ChallengeVPC
+      CidrBlock: !Ref PrivateSubnetCIDR
+      MapPublicIpOnLaunch: false
+      AvailabilityZone: !Select 
+        - 0
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: !Sub "ctf-private-subnet-${ChallengeId}"
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub "ctf-igw-${ChallengeId}"
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref ChallengeVPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ChallengeVPC
+      Tags:
+        - Key: Name
+          Value: !Sub "ctf-public-routes-${ChallengeId}"
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  # Security Groups
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP and SSH access to the web server
+      VpcId: !Ref ChallengeVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub "ctf-webserver-sg-${ChallengeId}"
+
+  DatabaseSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow MySQL access from the web server
+      VpcId: !Ref ChallengeVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref WebServerSecurityGroup
+      Tags:
+        - Key: Name
+          Value: !Sub "ctf-db-sg-${ChallengeId}"
+
+  # S3 Bucket for Challenge Assets and User Uploads
+  ChallengeBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireObjects
+            Status: Enabled
+            ExpirationInDays: 1
+      Tags:
+        - Key: Challenge
+          Value: !Ref ChallengeId
+        - Key: User
+          Value: !Ref UserId
+
+  # IAM Role for EC2 (allows access to S3 buckets and other resources)
+  EC2InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+      Path: /
+      Policies:
+        - PolicyName: S3BucketAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource: !Sub "${ChallengeBucket.Arn}/*"
+
+  EC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref EC2InstanceRole
+
+  # RDS Instance (MySQL database with initial vulnerable data)
+  DatabaseInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: vulnerable_app
+      Engine: mysql
+      EngineVersion: '8.0'
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: '20'
+      StorageType: gp2
+      MasterUsername: admin
+      MasterUserPassword: !Sub "Passw0rd-${AWS::AccountId}-${AWS::Region}"
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VPCSecurityGroups:
+        - !Ref DatabaseSecurityGroup
+      Tags:
+        - Key: Challenge
+          Value: !Ref ChallengeId
+        - Key: User
+          Value: !Ref UserId
+      DeletionProtection: false
+
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for RDS instance
+      SubnetIds:
+        - !Ref PublicSubnet
+        - !Ref PrivateSubnet
+
+  # EC2 Instance with Vulnerable Web Application
+  VulnerableWebServer:
+    Type: AWS::EC2::Instance
+    DependsOn: DatabaseInstance
+    Properties:
+      InstanceType: !Ref EC2InstanceType
+      ImageId: ami-0c55b159cbfafe1f0  # Amazon Linux 2 (replace with actual AMI ID)
+      KeyName: ctf-key-pair  # Optional: Allow SSH access
+      SubnetId: !Ref PublicSubnet
+      SecurityGroupIds:
+        - !Ref WebServerSecurityGroup
+      IamInstanceProfile: !Ref EC2InstanceProfile
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          yum update -y
+          yum install -y httpd php php-mysqlnd mysql git
+          
+          # Start and enable Apache
+          systemctl start httpd
+          systemctl enable httpd
+          
+          # Clone vulnerable web application
+          cd /var/www/html
+          git clone https://github.com/example/vulnerable-app.git .
+          
+          # Configure database connection
+          cat <<EOF > /var/www/html/config.php
+          <?php
+          define('DB_SERVER', '${DatabaseInstance.Endpoint.Address}');
+          define('DB_USERNAME', 'admin');
+          define('DB_PASSWORD', 'Passw0rd-${AWS::AccountId}-${AWS::Region}');
+          define('DB_DATABASE', 'vulnerable_app');
+          ?>
+          EOF
+          
+          # Set up challenge files and flags
+          mkdir -p /opt/challenge
+          echo "CTF{SQLi_M4st3r_${ChallengeId}}" > /opt/challenge/flag.txt
+          chmod 400 /opt/challenge/flag.txt
+          
+          # Add dummy users to database
+          mysql -h ${DatabaseInstance.Endpoint.Address} -u admin -p"Passw0rd-${AWS::AccountId}-${AWS::Region}" vulnerable_app <<EOF
+          CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            username VARCHAR(50) NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            email VARCHAR(100) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+          
+          INSERT INTO users (username, password, email) VALUES 
+          ('admin', 'e10adc3949ba59abbe56e057f20f883e', 'admin@example.com'),
+          ('john_doe', '5f4dcc3b5aa765d61d8327deb882cf99', 'john@example.com'),
+          ('jane_smith', '25f9e794323b453885f5181f1b624d0b', 'jane@example.com'),
+          ('super_admin', 'd8578edf8458ce06fbc5bb76a58c5ca4', 'superadmin@internal.com');
+          
+          CREATE TABLE IF NOT EXISTS products (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            description TEXT,
+            price DECIMAL(10, 2) NOT NULL,
+            image_url VARCHAR(255),
+            category VARCHAR(50)
+          );
+          
+          INSERT INTO products (name, description, price, category) VALUES
+          ('Laptop', 'High-performance laptop with 16GB RAM', 999.99, 'Electronics'),
+          ('Smartphone', '6.5-inch display with triple camera', 699.99, 'Electronics'),
+          ('Headphones', 'Noise-cancelling wireless headphones', 199.99, 'Accessories'),
+          ('Coffee Maker', 'Programmable coffee maker with timer', 49.99, 'Appliances');
+          
+          CREATE TABLE IF NOT EXISTS orders (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT,
+            order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            total_amount DECIMAL(10, 2) NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+          );
+          
+          CREATE TABLE IF NOT EXISTS admin_notes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(100) NOT NULL,
+            content TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            secret_flag VARCHAR(100) DEFAULT 'CTF{SQLi_M4st3r_${ChallengeId}}'
+          );
+          
+          INSERT INTO admin_notes (title, content) VALUES
+          ('Server Credentials', 'Remember to change default passwords on production!'),
+          ('Upcoming Release', 'Need to fix SQL injection vulnerability in search function before release');
+          EOF
+          
+          # Set up monitoring service to validate challenge completion
+          cat <<EOF > /opt/challenge/monitor.py
+          #!/usr/bin/env python3
+          import os
+          import time
+          import json
+          import boto3
+          import mysql.connector
+          import re
+          
+          def check_challenge_completion():
+              # Check database for signs of SQL injection
+              try:
+                  conn = mysql.connector.connect(
+                      host="${DatabaseInstance.Endpoint.Address}",
+                      user="admin",
+                      password="Passw0rd-${AWS::AccountId}-${AWS::Region}",
+                      database="vulnerable_app"
+                  )
+                  cursor = conn.cursor()
+                  
+                  # Check if admin_notes table was accessed
+                  query = "SELECT * FROM admin_notes WHERE accessed = 1"
+                  cursor.execute(query)
+                  admin_notes_accessed = cursor.fetchall()
+                  
+                  # Check Apache logs for SQL injection attempts
+                  sql_injection_pattern = re.compile(r"(UNION|SELECT|OR 1=1|--)")
+                  with open('/var/log/httpd/access_log', 'r') as f:
+                      log_content = f.read()
+                      sql_injection_attempts = bool(sql_injection_pattern.search(log_content))
+                  
+                  # Check if the flag file was accessed
+                  flag_accessed = os.path.exists('/opt/challenge/flag_accessed')
+                  
+                  # If all conditions are met, report success
+                  if admin_notes_accessed and sql_injection_attempts and flag_accessed:
+                      # Report completion to CTF platform
+                      sns = boto3.client('sns')
+                      sns.publish(
+                          TopicArn="${ChallengeCompletionTopic}",
+                          Message=json.dumps({
+                              'challengeId': "${ChallengeId}",
+                              'userId': "${UserId}",
+                              'teamId': "${TeamId}",
+                              'completed': True,
+                              'timestamp': time.time()
+                          }),
+                          Subject="Challenge Completion"
+                      )
+                      return True
+                  return False
+              except Exception as e:
+                  print(f"Error checking challenge completion: {e}")
+                  return False
+          
+          if __name__ == "__main__":
+              while True:
+                  check_challenge_completion()
+                  time.sleep(60)  # Check every minute
+          EOF
+          
+          chmod +x /opt/challenge/monitor.py
+          
+          # Install dependencies for monitor script
+          pip3 install boto3 mysql-connector-python
+          
+          # Create a systemd service for the monitor
+          cat <<EOF > /etc/systemd/system/challenge-monitor.service
+          [Unit]
+          Description=CTF Challenge Completion Monitor
+          After=network.target
+          
+          [Service]
+          ExecStart=/opt/challenge/monitor.py
+          Restart=always
+          User=root
+          Group=root
+          Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+          
+          systemctl daemon-reload
+          systemctl enable challenge-monitor
+          systemctl start challenge-monitor
+          
+          # Set permissions for web files
+          chown -R apache:apache /var/www/html
+          
+          # Indicate that setup is complete
+          touch /opt/challenge/setup_complete
+      Tags:
+        - Key: Name
+          Value: !Sub "ctf-webserver-${ChallengeId}"
+        - Key: Challenge
+          Value: !Ref ChallengeId
+        - Key: User
+          Value: !Ref UserId
+
+  # SNS Topic for Challenge Completion Notifications
+  ChallengeCompletionTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "challenge-completion-${ChallengeId}"
+      Tags:
+        - Key: Challenge
+          Value: !Ref ChallengeId
+        - Key: User
+          Value: !Ref UserId
+
+  # IAM Policy to allow EC2 to publish to SNS
+  EC2SNSPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub "ec2-sns-policy-${ChallengeId}"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - sns:Publish
+            Resource: !Ref ChallengeCompletionTopic
+      Roles:
+        - !Ref EC2InstanceRole
+
+  # Lambda Function for Challenge Validation
+  ChallengeValidatorFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "challenge-validator-${ChallengeId}"
+      Runtime: python3.9
+      Handler: index.handler
+      Role: !GetAtt ChallengeValidatorRole.Arn
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import time
+          import re
+          
+          def handler(event, context):
+              # Extract submission from the event
+              submission = event.get('submission', '').strip()
+              
+              # Check if the submission matches the expected flag format
+              expected_flag_pattern = re.compile(r"CTF\{SQLi_M4st3r_.+\}")
+              if not expected_flag_pattern.match(submission):
+                  return {
+                      'success': False,
+                      'message': 'Incorrect flag format. Keep trying!'
+                  }
+              
+              # Check if the flag is correct
+              expected_flag = f"CTF{{SQLi_M4st3r_{event.get('challengeId')}}}"
+              if submission == expected_flag:
+                  # Mark challenge as completed in DynamoDB
+                  dynamodb = boto3.resource('dynamodb')
+                  
+                  # Update submission record
+                  timestamp = int(time.time())
+                  
+                  return {
+                      'success': True,
+                      'message': 'Congratulations! You successfully exploited the SQL injection vulnerability.',
+                      'timestamp': timestamp
+                  }
+              else:
+                  return {
+                      'success': False,
+                      'message': 'Incorrect flag. Keep trying!'
+                  }
+      Environment:
+        Variables:
+          CHALLENGE_ID: !Ref ChallengeId
+      Timeout: 30
+      MemorySize: 128
+      Tags:
+        - Key: Challenge
+          Value: !Ref ChallengeId
+        - Key: User
+          Value: !Ref UserId
+
+  # IAM Role for Challenge Validator Lambda
+  ChallengeValidatorRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:UpdateItem
+                Resource: "*"
+
+  # CloudWatch Alarms for monitoring resource usage
+  CPUUtilizationAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "high-cpu-${ChallengeId}"
+      ComparisonOperator: GreaterThanThreshold
+      EvaluationPeriods: 2
+      MetricName: CPUUtilization
+      Namespace: AWS/EC2
+      Period: 60
+      Statistic: Average
+      Threshold: 80
+      AlarmDescription: Alarm if CPU exceeds 80% for more than 2 minutes
+      Dimensions:
+        - Name: InstanceId
+          Value: !Ref VulnerableWebServer
+
+  # CloudWatch Logs Group for challenge logs
+  ChallengeLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/ctf/challenge/${ChallengeId}"
+      RetentionInDays: 1
+
+  # CloudWatch Dashboard for challenge overview
+  ChallengeDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub "ctf-challenge-${ChallengeId}"
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "x": 0,
+              "y": 0,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/EC2", "CPUUtilization", "InstanceId", "${VulnerableWebServer}" ]
+                ],
+                "period": 300,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "EC2 CPU Utilization"
+              }
+            },
+            {
+              "type": "metric",
+              "x": 0,
+              "y": 6,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", "${DatabaseInstance}" ]
+                ],
+                "period": 300,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "RDS CPU Utilization"
+              }
+            }
+          ]
+        }
+
+  # EventBridge Rule for Environment Cleanup
+  EnvironmentCleanupRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Automatically terminate the challenge environment after 4 hours"
+      ScheduleExpression: "rate(4 hours)"
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt EnvironmentCleanupFunction.Arn
+          Id: "TargetFunction"
+
+  # Permission for EventBridge to invoke Lambda
+  PermissionForEventsToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref EnvironmentCleanupFunction
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt EnvironmentCleanupRule.Arn
+
+  # Lambda Function for Environment Cleanup
+  EnvironmentCleanupFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "environment-cleanup-${ChallengeId}"
+      Runtime: python3.9
+      Handler: index.handler
+      Role: !GetAtt EnvironmentCleanupRole.Arn
+      Code:
+        ZipFile: |
+          import boto3
+          import os
+          
+          def handler(event, context):
+              # Get CloudFormation client
+              cf = boto3.client('cloudformation')
+              
+              # Delete the stack
+              stack_name = f"ctf-challenge-{os.environ['CHALLENGE_ID']}"
+              try:
+                  cf.delete_stack(StackName=stack_name)
+                  return {
+                      'statusCode': 200,
+                      'body': f"Stack {stack_name} deletion initiated"
+                  }
+              except Exception as e:
+                  print(f"Error deleting stack {stack_name}: {e}")
+                  return {
+                      'statusCode': 500,
+                      'body': f"Error deleting stack: {str(e)}"
+                  }
+      Environment:
+        Variables:
+          CHALLENGE_ID: !Ref ChallengeId
+      Timeout: 30
+      MemorySize: 128
+
+  # IAM Role for Environment Cleanup Lambda
+  EnvironmentCleanupRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: CloudFormationDelete
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudformation:DeleteStack
+                Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/ctf-challenge-${ChallengeId}/*"
+
+Outputs:
+  WebsiteURL:
+    Description: URL for the vulnerable web application
+    Value: !Sub "http://${VulnerableWebServer.PublicDnsName}"
+  
+  SSHAccess:
+    Description: SSH command for accessing the web server
+    Value: !Sub "ssh ec2-user@${VulnerableWebServer.PublicDnsName}"
+  
+  DatabaseEndpoint:
+    Description: Endpoint for the MySQL database
+    Value: !GetAtt DatabaseInstance.Endpoint.Address
+  
+  DatabasePort:
+    Description: Port for the MySQL database
+    Value: !GetAtt DatabaseInstance.Endpoint.Port
+  
+  ChallengeS3Bucket:
+    Description: S3 bucket for challenge assets
+    Value: !Ref ChallengeBucket

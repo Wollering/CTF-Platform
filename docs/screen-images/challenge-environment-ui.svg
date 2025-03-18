@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <!-- Background -->
+  <rect width="1200" height="900" fill="#f8f9fa" />
+
+  <!-- Main container -->
+  <rect x="20" y="20" width="1160" height="860" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+
+  <!-- Header section -->
+  <rect x="20" y="20" width="1160" height="60" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="40" y="55" font-family="Arial" font-size="20" font-weight="bold" fill="#212529">SQL Injection Challenge</text>
+  
+  <!-- Status badges -->
+  <rect x="900" y="36" width="80" height="28" rx="14" fill="#28a745" />
+  <text x="940" y="55" font-family="Arial" font-size="14" font-weight="bold" fill="white" text-anchor="middle">ACTIVE</text>
+  
+  <!-- Timer -->
+  <text x="1000" y="55" font-family="Arial" font-size="16" fill="#212529">03:45:12</text>
+  
+  <!-- Fullscreen button -->
+  <rect x="1120" y="36" width="30" height="28" rx="5" fill="transparent" stroke="#6c757d" stroke-width="1" />
+  <path d="M1125 46 L1145 46 M1125 54 L1145 54 M1135 41 L1135 59" stroke="#6c757d" stroke-width="2" />
+
+  <!-- Tab navigation -->
+  <rect x="40" y="100" width="150" height="40" rx="5" fill="#007bff" />
+  <text x="115" y="125" font-family="Arial" font-size="16" font-weight="bold" fill="white" text-anchor="middle">Description</text>
+  
+  <rect x="195" y="100" width="150" height="40" rx="5" fill="transparent" stroke="#dee2e6" stroke-width="1" />
+  <text x="270" y="125" font-family="Arial" font-size="16" fill="#6c757d" text-anchor="middle">Resources</text>
+  
+  <rect x="350" y="100" width="150" height="40" rx="5" fill="transparent" stroke="#dee2e6" stroke-width="1" />
+  <text x="425" y="125" font-family="Arial" font-size="16" fill="#6c757d" text-anchor="middle">Terminal</text>
+  
+  <rect x="505" y="100" width="150" height="40" rx="5" fill="transparent" stroke="#dee2e6" stroke-width="1" />
+  <text x="580" y="125" font-family="Arial" font-size="16" fill="#6c757d" text-anchor="middle">Hints</text>
+  
+  <rect x="660" y="100" width="150" height="40" rx="5" fill="transparent" stroke="#dee2e6" stroke-width="1" />
+  <text x="735" y="125" font-family="Arial" font-size="16" fill="#6c757d" text-anchor="middle">Guide</text>
+
+  <!-- Main content area -->
+  <rect x="40" y="150" width="770" height="700" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  
+  <!-- Challenge description -->
+  <text x="60" y="180" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">SQL Injection Challenge</text>
+  <text x="60" y="215" font-family="Arial" font-size="16" fill="#212529">In this challenge, you'll need to exploit a SQL injection vulnerability in a web application.</text>
+  <text x="60" y="245" font-family="Arial" font-size="16" fill="#212529">The application is vulnerable to SQL injection in its search functionality. Your goal is to:</text>
+  
+  <text x="80" y="285" font-family="Arial" font-size="16" fill="#212529">1. Find the vulnerable endpoint</text>
+  <text x="80" y="315" font-family="Arial" font-size="16" fill="#212529">2. Exploit the vulnerability to access the hidden_data table</text>
+  <text x="80" y="345" font-family="Arial" font-size="16" fill="#212529">3. Extract the secret flag from the database</text>
+  
+  <text x="60" y="385" font-family="Arial" font-size="16" fill="#212529">Use the terminal to access the provided resources and submit the flag when you find it.</text>
+  
+  <!-- Solution submission form -->
+  <text x="60" y="445" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Submit your solution</text>
+  <rect x="60" y="460" width="500" height="40" rx="5" fill="white" stroke="#ced4da" stroke-width="1" />
+  <text x="75" y="485" font-family="Arial" font-size="16" fill="#6c757d">Enter the flag (e.g., CTF{secret_value})</text>
+  <rect x="60" y="515" width="140" height="40" rx="5" fill="#007bff" />
+  <text x="130" y="540" font-family="Arial" font-size="16" font-weight="bold" fill="white" text-anchor="middle">Submit Flag</text>
+
+  <!-- Sidebar -->
+  <rect x="830" y="150" width="330" height="240" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="850" y="180" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Challenge Information</text>
+  
+  <text x="850" y="215" font-family="Arial" font-size="16" fill="#212529">Category:</text>
+  <rect x="980" y="200" width="120" height="28" rx="14" fill="#6c757d" />
+  <text x="1040" y="220" font-family="Arial" font-size="14" font-weight="bold" fill="white" text-anchor="middle">Web Security</text>
+  
+  <text x="850" y="255" font-family="Arial" font-size="16" fill="#212529">Difficulty:</text>
+  <rect x="980" y="240" width="120" height="28" rx="14" fill="#ffc107" />
+  <text x="1040" y="260" font-family="Arial" font-size="14" font-weight="bold" fill="#212529" text-anchor="middle">Level 3/5</text>
+  
+  <text x="850" y="295" font-family="Arial" font-size="16" fill="#212529">Points:</text>
+  <text x="980" y="295" font-family="Arial" font-size="16" fill="#212529">300</text>
+  
+  <text x="850" y="335" font-family="Arial" font-size="16" fill="#212529">Success Rate:</text>
+  <text x="980" y="335" font-family="Arial" font-size="16" fill="#212529">42%</text>
+  
+  <text x="850" y="375" font-family="Arial" font-size="16" fill="#212529">Time Remaining:</text>
+  <text x="980" y="375" font-family="Arial" font-size="16" fill="#212529" font-weight="bold">03:45:12</text>
+
+  <!-- Hints card -->
+  <rect x="830" y="410" width="330" height="200" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="850" y="440" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Hints</text>
+  <rect x="1055" y="420" width="85" height="28" rx="5" fill="transparent" stroke="#ffc107" stroke-width="1" />
+  <text x="1097" y="439" font-family="Arial" font-size="14" fill="#ffc107" text-anchor="middle">View All</text>
+  
+  <text x="850" y="480" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Hint 1</text>
+  <rect x="970" y="465" width="80" height="28" rx="5" fill="transparent" stroke="#ffc107" stroke-width="1" />
+  <text x="1010" y="484" font-family="Arial" font-size="14" fill="#ffc107" text-anchor="middle">Unlock</text>
+  <text x="850" y="505" font-family="Arial" font-size="14" fill="#6c757d">Costs 10 points</text>
+  
+  <text x="850" y="545" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Hint 2</text>
+  <rect x="970" y="530" width="80" height="28" rx="5" fill="transparent" stroke="#ffc107" stroke-width="1" />
+  <text x="1010" y="549" font-family="Arial" font-size="14" fill="#ffc107" text-anchor="middle">Unlock</text>
+  <text x="850" y="570" font-family="Arial" font-size="14" fill="#6c757d">Costs 20 points</text>
+
+  <!-- Progress card -->
+  <rect x="830" y="630" width="330" height="220" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="850" y="660" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Your Progress</text>
+  
+  <text x="850" y="700" font-family="Arial" font-size="16" fill="#212529">You're currently working on this challenge.</text>
+  
+  <text x="850" y="740" font-family="Arial" font-size="14" fill="#6c757d">Challenge Status</text>
+  <text x="850" y="765" font-family="Arial" font-size="12" fill="#6c757d">Started</text>
+  <text x="950" y="765" font-family="Arial" font-size="12" fill="#6c757d">In Progress</text>
+  <text x="1075" y="765" font-family="Arial" font-size="12" fill="#6c757d">Completed</text>
+  
+  <rect x="850" y="775" width="290" height="15" rx="7.5" fill="#e9ecef" />
+  <rect x="850" y="775" width="95" height="15" rx="7.5" fill="#28a745" />
+  <rect x="945" y="775" width="97" height="15" rx="0" fill="#007bff" />
+  
+  <text x="850" y="815" font-family="Arial" font-size="14" fill="#6c757d">Submit the correct flag to complete this challenge</text>
+</svg>

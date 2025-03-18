@@ -1,0 +1,209 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <!-- Main background -->
+  <rect width="1200" height="900" fill="#f8f9fa" />
+  
+  <!-- Header navigation bar -->
+  <rect x="0" y="0" width="1200" height="60" fill="#343a40" />
+  
+  <!-- Logo -->
+  <rect x="20" y="15" width="30" height="30" rx="5" fill="#61afef" />
+  <text x="60" y="35" font-family="Arial" font-size="18" font-weight="bold" fill="white">CTF Platform</text>
+  
+  <!-- Navigation items -->
+  <text x="220" y="35" font-family="Arial" font-size="16" fill="white">Dashboard</text>
+  <text x="350" y="35" font-family="Arial" font-size="16" font-weight="bold" fill="#61afef">Challenges</text>
+  <text x="470" y="35" font-family="Arial" font-size="16" fill="white">Leaderboard</text>
+  <text x="600" y="35" font-family="Arial" font-size="16" fill="white">Teams</text>
+  
+  <!-- User profile -->
+  <circle cx="1140" cy="30" r="20" fill="#6c757d" />
+  <text x="1140" y="35" font-family="Arial" font-size="14" fill="white" text-anchor="middle">JD</text>
+  <text x="1090" y="35" font-family="Arial" font-size="16" fill="white">johndoe</text>
+  
+  <!-- Points display -->
+  <text x="970" y="35" font-family="Arial" font-size="16" fill="white">850 points</text>
+  
+  <!-- Main content area -->
+  <rect x="20" y="80" width="1160" height="800" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  
+  <!-- Page title -->
+  <text x="40" y="120" font-family="Arial" font-size="24" font-weight="bold" fill="#212529">Challenges</text>
+  
+  <!-- Challenge filters -->
+  <rect x="40" y="140" width="1120" height="60" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  
+  <!-- Filter controls -->
+  <text x="60" y="175" font-family="Arial" font-size="16" fill="#212529">Category:</text>
+  <rect x="140" y="155" width="160" height="30" rx="5" fill="white" stroke="#ced4da" stroke-width="1" />
+  <text x="155" y="175" font-family="Arial" font-size="14" fill="#6c757d">All Categories</text>
+  
+  <text x="340" y="175" font-family="Arial" font-size="16" fill="#212529">Difficulty:</text>
+  <rect x="420" y="155" width="140" height="30" rx="5" fill="white" stroke="#ced4da" stroke-width="1" />
+  <text x="435" y="175" font-family="Arial" font-size="14" fill="#6c757d">All Levels</text>
+  
+  <text x="600" y="175" font-family="Arial" font-size="16" fill="#212529">Status:</text>
+  <rect x="660" y="155" width="140" height="30" rx="5" fill="white" stroke="#ced4da" stroke-width="1" />
+  <text x="675" y="175" font-family="Arial" font-size="14" fill="#6c757d">All Challenges</text>
+  
+  <rect x="840" y="155" width="240" height="30" rx="5" fill="white" stroke="#ced4da" stroke-width="1" />
+  <text x="855" y="175" font-family="Arial" font-size="14" fill="#6c757d">Search challenges...</text>
+  <rect x="1090" y="155" width="70" height="30" rx="5" fill="#007bff" />
+  <text x="1125" y="175" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Search</text>
+  
+  <!-- Challenge cards grid -->
+  <g transform="translate(40, 220)">
+    <!-- Challenge card 1 -->
+    <rect width="350" height="220" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+    <rect width="350" height="50" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+    <text x="15" y="30" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">SQL Injection Basics</text>
+    <rect x="290" y="15" width="45" height="25" rx="12.5" fill="#28a745" />
+    <text x="312" y="32" font-family="Arial" font-size="14" fill="white" text-anchor="middle">1/5</text>
+    
+    <text x="15" y="70" font-family="Arial" font-size="14" fill="#212529" width="320">Learn the basics of SQL injection by exploiting a vulnerable login form. Extract sensitive data from the database.</text>
+    
+    <rect x="15" y="110" width="100" height="22" rx="11" fill="#6c757d" />
+    <text x="65" y="126" font-family="Arial" font-size="12" fill="white" text-anchor="middle">Web Security</text>
+    
+    <text x="130" y="126" font-family="Arial" font-size="14" fill="#212529">100 points</text>
+    
+    <text x="15" y="150" font-family="Arial" font-size="12" fill="#6c757d">Success Rate</text>
+    <rect x="15" y="160" width="320" height="10" rx="5" fill="#e9ecef" />
+    <rect x="15" y="160" width="224" height="10" rx="5" fill="#17a2b8" />
+    <text x="340" y="168" font-family="Arial" font-size="10" fill="#6c757d" text-anchor="end">70%</text>
+    
+    <rect x="15" y="180" width="320" height="30" rx="5" fill="#007bff" />
+    <text x="175" y="200" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Start Challenge</text>
+  </g>
+  
+  <g transform="translate(410, 220)">
+    <!-- Challenge card 2 -->
+    <rect width="350" height="220" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+    <rect width="350" height="50" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+    <text x="15" y="30" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Password Cracking</text>
+    <rect x="290" y="15" width="45" height="25" rx="12.5" fill="#ffc107" />
+    <text x="312" y="32" font-family="Arial" font-size="14" fill="#212529" text-anchor="middle">2/5</text>
+    
+    <text x="15" y="70" font-family="Arial" font-size="14" fill="#212529" width="320">Use various techniques to crack password hashes. Learn about hash algorithms and rainbow tables.</text>
+    
+    <rect x="15" y="110" width="100" height="22" rx="11" fill="#6c757d" />
+    <text x="65" y="126" font-family="Arial" font-size="12" fill="white" text-anchor="middle">Cryptography</text>
+    
+    <text x="130" y="126" font-family="Arial" font-size="14" fill="#212529">150 points</text>
+    
+    <text x="15" y="150" font-family="Arial" font-size="12" fill="#6c757d">Success Rate</text>
+    <rect x="15" y="160" width="320" height="10" rx="5" fill="#e9ecef" />
+    <rect x="15" y="160" width="160" height="10" rx="5" fill="#17a2b8" />
+    <text x="340" y="168" font-family="Arial" font-size="10" fill="#6c757d" text-anchor="end">50%</text>
+    
+    <rect x="15" y="180" width="320" height="30" rx="5" fill="#007bff" />
+    <text x="175" y="200" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Start Challenge</text>
+  </g>
+  
+  <g transform="translate(780, 220)">
+    <!-- Challenge card 3 -->
+    <rect width="350" height="220" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+    <rect width="350" height="50" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+    <text x="15" y="30" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">S3 Bucket Misconfiguration</text>
+    <rect x="290" y="15" width="45" height="25" rx="12.5" fill="#ffc107" />
+    <text x="312" y="32" font-family="Arial" font-size="14" fill="#212529" text-anchor="middle">3/5</text>
+    
+    <text x="15" y="70" font-family="Arial" font-size="14" fill="#212529" width="320">Identify and exploit misconfigured AWS S3 buckets to access confidential files.</text>
+    
+    <rect x="15" y="110" width="100" height="22" rx="11" fill="#6c757d" />
+    <text x="65" y="126" font-family="Arial" font-size="12" fill="white" text-anchor="middle">Cloud Security</text>
+    
+    <text x="130" y="126" font-family="Arial" font-size="14" fill="#212529">200 points</text>
+    
+    <text x="15" y="150" font-family="Arial" font-size="12" fill="#6c757d">Success Rate</text>
+    <rect x="15" y="160" width="320" height="10" rx="5" fill="#e9ecef" />
+    <rect x="15" y="160" width="128" height="10" rx="5" fill="#17a2b8" />
+    <text x="340" y="168" font-family="Arial" font-size="10" fill="#6c757d" text-anchor="end">40%</text>
+    
+    <rect x="15" y="180" width="320" height="30" rx="5" fill="#007bff" />
+    <text x="175" y="200" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Start Challenge</text>
+  </g>
+  
+  <g transform="translate(40, 460)">
+    <!-- Challenge card 4 (completed) -->
+    <rect width="350" height="220" rx="5" fill="white" stroke="#28a745" stroke-width="2" />
+    <rect width="350" height="50" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+    <text x="15" y="30" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Command Injection</text>
+    <circle cx="320" cy="25" r="12" fill="#28a745" />
+    <text x="320" y="29" font-family="Arial" font-size="12" fill="white" text-anchor="middle">✓</text>
+    <rect x="250" y="15" width="45" height="25" rx="12.5" fill="#ffc107" />
+    <text x="272" y="32" font-family="Arial" font-size="14" fill="#212529" text-anchor="middle">2/5</text>
+    
+    <text x="15" y="70" font-family="Arial" font-size="14" fill="#212529" width="320">Exploit command injection vulnerabilities to execute arbitrary commands on the server.</text>
+    
+    <rect x="15" y="110" width="100" height="22" rx="11" fill="#6c757d" />
+    <text x="65" y="126" font-family="Arial" font-size="12" fill="white" text-anchor="middle">Web Security</text>
+    
+    <text x="130" y="126" font-family="Arial" font-size="14" fill="#212529">150 points</text>
+    
+    <text x="15" y="150" font-family="Arial" font-size="12" fill="#6c757d">Success Rate</text>
+    <rect x="15" y="160" width="320" height="10" rx="5" fill="#e9ecef" />
+    <rect x="15" y="160" width="192" height="10" rx="5" fill="#17a2b8" />
+    <text x="340" y="168" font-family="Arial" font-size="10" fill="#6c757d" text-anchor="end">60%</text>
+    
+    <rect x="15" y="180" width="320" height="30" rx="5" fill="#28a745" />
+    <text x="175" y="200" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Completed</text>
+  </g>
+  
+  <g transform="translate(410, 460)">
+    <!-- Challenge card 5 -->
+    <rect width="350" height="220" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+    <rect width="350" height="50" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+    <text x="15" y="30" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Cross-Site Scripting (XSS)</text>
+    <rect x="290" y="15" width="45" height="25" rx="12.5" fill="#ffc107" />
+    <text x="312" y="32" font-family="Arial" font-size="14" fill="#212529" text-anchor="middle">2/5</text>
+    
+    <text x="15" y="70" font-family="Arial" font-size="14" fill="#212529" width="320">Discover and exploit XSS vulnerabilities to inject malicious scripts and steal cookies.</text>
+    
+    <rect x="15" y="110" width="100" height="22" rx="11" fill="#6c757d" />
+    <text x="65" y="126" font-family="Arial" font-size="12" fill="white" text-anchor="middle">Web Security</text>
+    
+    <text x="130" y="126" font-family="Arial" font-size="14" fill="#212529">150 points</text>
+    
+    <text x="15" y="150" font-family="Arial" font-size="12" fill="#6c757d">Success Rate</text>
+    <rect x="15" y="160" width="320" height="10" rx="5" fill="#e9ecef" />
+    <rect x="15" y="160" width="176" height="10" rx="5" fill="#17a2b8" />
+    <text x="340" y="168" font-family="Arial" font-size="10" fill="#6c757d" text-anchor="end">55%</text>
+    
+    <rect x="15" y="180" width="320" height="30" rx="5" fill="#007bff" />
+    <text x="175" y="200" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Start Challenge</text>
+  </g>
+  
+  <g transform="translate(780, 460)">
+    <!-- Challenge card 6 -->
+    <rect width="350" height="220" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+    <rect width="350" height="50" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+    <text x="15" y="30" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Lambda Function Security</text>
+    <rect x="290" y="15" width="45" height="25" rx="12.5" fill="#dc3545" />
+    <text x="312" y="32" font-family="Arial" font-size="14" fill="white" text-anchor="middle">4/5</text>
+    
+    <text x="15" y="70" font-family="Arial" font-size="14" fill="#212529" width="320">Identify and exploit vulnerabilities in serverless AWS Lambda functions.</text>
+    
+    <rect x="15" y="110" width="100" height="22" rx="11" fill="#6c757d" />
+    <text x="65" y="126" font-family="Arial" font-size="12" fill="white" text-anchor="middle">Cloud Security</text>
+    
+    <text x="130" y="126" font-family="Arial" font-size="14" fill="#212529">250 points</text>
+    
+    <text x="15" y="150" font-family="Arial" font-size="12" fill="#6c757d">Success Rate</text>
+    <rect x="15" y="160" width="320" height="10" rx="5" fill="#e9ecef" />
+    <rect x="15" y="160" width="96" height="10" rx="5" fill="#17a2b8" />
+    <text x="340" y="168" font-family="Arial" font-size="10" fill="#6c757d" text-anchor="end">30%</text>
+    
+    <rect x="15" y="180" width="320" height="30" rx="5" fill="#007bff" />
+    <text x="175" y="200" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Start Challenge</text>
+  </g>
+  
+  <!-- Pagination -->
+  <rect x="550" y="700" width="40" height="40" rx="5" fill="#007bff" />
+  <text x="570" y="725" font-family="Arial" font-size="18" fill="white" text-anchor="middle">1</text>
+  
+  <rect x="600" y="700" width="40" height="40" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="620" y="725" font-family="Arial" font-size="18" fill="#6c757d" text-anchor="middle">2</text>
+  
+  <rect x="650" y="700" width="40" height="40" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="670" y="725" font-family="Arial" font-size="18" fill="#6c757d" text-anchor="middle">3</text>
+</svg>

@@ -1,0 +1,206 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <!-- Main background -->
+  <rect width="1200" height="900" fill="#f8f9fa" />
+  
+  <!-- Header navigation bar -->
+  <rect x="0" y="0" width="1200" height="60" fill="#343a40" />
+  
+  <!-- Logo -->
+  <rect x="20" y="15" width="30" height="30" rx="5" fill="#61afef" />
+  <text x="60" y="35" font-family="Arial" font-size="18" font-weight="bold" fill="white">CTF Platform</text>
+  
+  <!-- Navigation items -->
+  <text x="220" y="35" font-family="Arial" font-size="16" fill="white">Dashboard</text>
+  <text x="350" y="35" font-family="Arial" font-size="16" fill="white">Challenges</text>
+  <text x="470" y="35" font-family="Arial" font-size="16" fill="white">Leaderboard</text>
+  <text x="600" y="35" font-family="Arial" font-size="16" fill="white">Teams</text>
+  
+  <!-- User profile -->
+  <circle cx="1140" cy="30" r="20" fill="#6c757d" />
+  <text x="1140" y="35" font-family="Arial" font-size="14" fill="white" text-anchor="middle">JD</text>
+  <text x="1090" y="35" font-family="Arial" font-size="16" fill="white">johndoe</text>
+  
+  <!-- Challenge environment area -->
+  <rect x="20" y="80" width="1160" height="800" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  
+  <!-- Challenge name and status bar -->
+  <rect x="20" y="80" width="1160" height="60" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="40" y="120" font-family="Arial" font-size="20" font-weight="bold" fill="#212529">SQL Injection Challenge</text>
+  
+  <!-- Status badges -->
+  <rect x="850" y="96" width="80" height="28" rx="14" fill="#28a745" />
+  <text x="890" y="115" font-family="Arial" font-size="14" font-weight="bold" fill="white" text-anchor="middle">ACTIVE</text>
+  
+  <!-- Timer -->
+  <text x="950" y="120" font-family="Arial" font-size="16" fill="#212529">03:45:12</text>
+  
+  <!-- Challenge tabs -->
+  <rect x="20" y="140" width="1160" height="50" rx="0" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  
+  <rect x="40" y="150" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="115" y="170" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Description</text>
+  
+  <rect x="200" y="150" width="150" height="30" rx="5" fill="#007bff" />
+  <text x="275" y="170" font-family="Arial" font-size="16" font-weight="bold" fill="white" text-anchor="middle">Resources</text>
+  
+  <rect x="360" y="150" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="435" y="170" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Terminal</text>
+  
+  <rect x="520" y="150" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="595" y="170" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Hints</text>
+  
+  <rect x="680" y="150" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="755" y="170" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Guide</text>
+  
+  <!-- View controls -->
+  <rect x="40" y="210" width="830" height="40" rx="5" fill="#f8f9fa" />
+  <text x="60" y="235" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Environment Resources</text>
+  
+  <rect x="700" y="215" width="80" height="30" rx="5" fill="#007bff" />
+  <text x="740" y="235" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Grid</text>
+  
+  <rect x="790" y="215" width="80" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="830" y="235" font-family="Arial" font-size="14" fill="#212529" text-anchor="middle">Explorer</text>
+  
+  <!-- Resource cards -->
+  <!-- Web Server Card -->
+  <rect x="40" y="270" width="400" height="220" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <rect x="40" y="270" width="400" height="50" rx="5 5 0 0" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="60" y="300" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Web Server</text>
+  <rect x="360" y="280" width="60" height="28" rx="14" fill="#28a745" />
+  <text x="390" y="299" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Active</text>
+  
+  <text x="60" y="340" font-family="Arial" font-size="14" font-weight="bold" fill="#212529">URL:</text>
+  <rect x="100" y="322" width="320" height="36" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="120" y="345" font-family="Arial" font-size="14" fill="#212529">http://ec2-12-345-678-90.compute-1.amazonaws.com</text>
+  <rect x="370" y="328" width="40" height="24" rx="5" fill="transparent" stroke="#6c757d" stroke-width="1" />
+  <text x="390" y="345" font-family="Arial" font-size="12" fill="#6c757d" text-anchor="middle">Copy</text>
+  
+  <text x="60" y="380" font-family="Arial" font-size="14" font-weight="bold" fill="#212529">Instance ID:</text>
+  <rect x="150" y="362" width="270" height="36" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="170" y="385" font-family="Arial" font-size="14" fill="#212529">i-abc123def456</text>
+  <rect x="370" y="368" width="40" height="24" rx="5" fill="transparent" stroke="#6c757d" stroke-width="1" />
+  <text x="390" y="385" font-family="Arial" font-size="12" fill="#6c757d" text-anchor="middle">Copy</text>
+  
+  <text x="60" y="420" font-family="Arial" font-size="14" font-weight="bold" fill="#212529">Public IP:</text>
+  <rect x="140" y="402" width="280" height="36" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="160" y="425" font-family="Arial" font-size="14" fill="#212529">12.345.678.90</text>
+  <rect x="370" y="408" width="40" height="24" rx="5" fill="transparent" stroke="#6c757d" stroke-width="1" />
+  <text x="390" y="425" font-family="Arial" font-size="12" fill="#6c757d" text-anchor="middle">Copy</text>
+  
+  <rect x="60" y="450" width="360" height="30" rx="5" fill="#007bff" />
+  <text x="240" y="470" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Open in Browser</text>
+  
+  <!-- Database Card -->
+  <rect x="470" y="270" width="400" height="220" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <rect x="470" y="270" width="400" height="50" rx="5 5 0 0" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="490" y="300" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">MySQL Database</text>
+  <rect x="790" y="280" width="60" height="28" rx="14" fill="#28a745" />
+  <text x="820" y="299" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Active</text>
+  
+  <text x="490" y="340" font-family="Arial" font-size="14" font-weight="bold" fill="#212529">Host:</text>
+  <rect x="530" y="322" width="320" height="36" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="550" y="345" font-family="Arial" font-size="14" fill="#212529">mysql-cluster.xyzabc123def.us-east-1.rds.amazonaws.com</text>
+  <rect x="800" y="328" width="40" height="24" rx="5" fill="transparent" stroke="#6c757d" stroke-width="1" />
+  <text x="820" y="345" font-family="Arial" font-size="12" fill="#6c757d" text-anchor="middle">Copy</text>
+  
+  <text x="490" y="380" font-family="Arial" font-size="14" font-weight="bold" fill="#212529">Database:</text>
+  <rect x="570" y="362" width="280" height="36" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="590" y="385" font-family="Arial" font-size="14" fill="#212529">vulnerable_app</text>
+  <rect x="800" y="368" width="40" height="24" rx="5" fill="transparent" stroke="#6c757d" stroke-width="1" />
+  <text x="820" y="385" font-family="Arial" font-size="12" fill="#6c757d" text-anchor="middle">Copy</text>
+  
+  <text x="490" y="420" font-family="Arial" font-size="14" font-weight="bold" fill="#212529">Credentials:</text>
+  <rect x="570" y="402" width="280" height="36" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="590" y="425" font-family="Arial" font-size="14" fill="#212529">Username: dbuser | Password: ••••••••</text>
+  <rect x="800" y="408" width="40" height="24" rx="5" fill="transparent" stroke="#6c757d" stroke-width="1" />
+  <text x="820" y="425" font-family="Arial" font-size="12" fill="#6c757d" text-anchor="middle">Copy</text>
+  
+  <rect x="490" y="450" width="360" height="30" rx="5" fill="#007bff" />
+  <text x="670" y="470" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Connect via Terminal</text>
+  
+  <!-- S3 Bucket Card -->
+  <rect x="40" y="510" width="400" height="220" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <rect x="40" y="510" width="400" height="50" rx="5 5 0 0" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="60" y="540" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">S3 Bucket</text>
+  <rect x="360" y="520" width="60" height="28" rx="14" fill="#28a745" />
+  <text x="390" y="539" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Active</text>
+  
+  <text x="60" y="580" font-family="Arial" font-size="14" font-weight="bold" fill="#212529">Bucket Name:</text>
+  <rect x="160" y="562" width="260" height="36" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="180" y="585" font-family="Arial" font-size="14" fill="#212529">ctf-challenge-bucket-xyzabc123def</text>
+  <rect x="370" y="568" width="40" height="24" rx="5" fill="transparent" stroke="#6c757d" stroke-width="1" />
+  <text x="390" y="585" font-family="Arial" font-size="12" fill="#6c757d" text-anchor="middle">Copy</text>
+  
+  <text x="60" y="620" font-family="Arial" font-size="14" font-weight="bold" fill="#212529">Region:</text>
+  <rect x="120" y="602" width="300" height="36" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="140" y="625" font-family="Arial" font-size="14" fill="#212529">us-east-1</text>
+  <rect x="370" y="608" width="40" height="24" rx="5" fill="transparent" stroke="#6c757d" stroke-width="1" />
+  <text x="390" y="625" font-family="Arial" font-size="12" fill="#6c757d" text-anchor="middle">Copy</text>
+  
+  <text x="60" y="660" font-family="Arial" font-size="14" font-weight="bold" fill="#212529">Access Key:</text>
+  <rect x="140" y="642" width="280" height="36" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="160" y="665" font-family="Arial" font-size="14" fill="#212529">AKIA3EXAMPLE2KEYID</text>
+  <rect x="370" y="648" width="40" height="24" rx="5" fill="transparent" stroke="#6c757d" stroke-width="1" />
+  <text x="390" y="665" font-family="Arial" font-size="12" fill="#6c757d" text-anchor="middle">Copy</text>
+  
+  <rect x="60" y="690" width="360" height="30" rx="5" fill="#007bff" />
+  <text x="240" y="710" font-family="Arial" font-size="14" fill="white" text-anchor="middle">List Bucket Contents</text>
+  
+  <!-- Lambda Card -->
+  <rect x="470" y="510" width="400" height="220" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <rect x="470" y="510" width="400" height="50" rx="5 5 0 0" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="490" y="540" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Lambda Function</text>
+  <rect x="790" y="520" width="60" height="28" rx="14" fill="#28a745" />
+  <text x="820" y="539" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Active</text>
+  
+  <text x="490" y="580" font-family="Arial" font-size="14" font-weight="bold" fill="#212529">Function Name:</text>
+  <rect x="600" y="562" width="250" height="36" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="620" y="585" font-family="Arial" font-size="14" fill="#212529">ctf-data-processor-xyzabc123def</text>
+  <rect x="800" y="568" width="40" height="24" rx="5" fill="transparent" stroke="#6c757d" stroke-width="1" />
+  <text x="820" y="585" font-family="Arial" font-size="12" fill="#6c757d" text-anchor="middle">Copy</text>
+  
+  <text x="490" y="620" font-family="Arial" font-size="14" font-weight="bold" fill="#212529">ARN:</text>
+  <rect x="530" y="602" width="320" height="36" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="550" y="625" font-family="Arial" font-size="14" fill="#212529">arn:aws:lambda:us-east-1:123456789012:function:...</text>
+  <rect x="800" y="608" width="40" height="24" rx="5" fill="transparent" stroke="#6c757d" stroke-width="1" />
+  <text x="820" y="625" font-family="Arial" font-size="12" fill="#6c757d" text-anchor="middle">Copy</text>
+  
+  <text x="490" y="660" font-family="Arial" font-size="14" font-weight="bold" fill="#212529">Runtime:</text>
+  <rect x="560" y="642" width="290" height="36" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="580" y="665" font-family="Arial" font-size="14" fill="#212529">Python 3.9</text>
+  <rect x="800" y="648" width="40" height="24" rx="5" fill="transparent" stroke="#6c757d" stroke-width="1" />
+  <text x="820" y="665" font-family="Arial" font-size="12" fill="#6c757d" text-anchor="middle">Copy</text>
+  
+  <rect x="490" y="690" width="360" height="30" rx="5" fill="#007bff" />
+  <text x="670" y="710" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Invoke Function</text>
+  
+  <!-- Right sidebar -->
+  <rect x="890" y="210" width="290" height="550" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  
+  <!-- Resource help section -->
+  <text x="910" y="240" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Access Instructions</text>
+  
+  <rect x="910" y="260" width="250" height="1" fill="#dee2e6" />
+  
+  <text x="910" y="290" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Web Server Access:</text>
+  <text x="910" y="320" font-family="Arial" font-size="14" fill="#212529">You can access the web server directly</text>
+  <text x="910" y="340" font-family="Arial" font-size="14" fill="#212529">in your browser using the URL.</text>
+  
+  <text x="910" y="380" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Database Connection:</text>
+  <text x="910" y="410" font-family="Arial" font-size="14" fill="#212529">Connect to the database via terminal:</text>
+  <rect x="910" y="425" width="250" height="60" rx="5" fill="#343a40" />
+  <text x="920" y="445" font-family="Courier New" font-size="12" fill="#cccccc">mysql -h [hostname] -u dbuser</text>
+  <text x="920" y="465" font-family="Courier New" font-size="12" fill="#cccccc">-p vulnerable_app</text>
+  
+  <text x="910" y="505" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">S3 Bucket Access:</text>
+  <text x="910" y="535" font-family="Arial" font-size="14" fill="#212529">List bucket contents via terminal:</text>
+  <rect x="910" y="550" width="250" height="40" rx="5" fill="#343a40" />
+  <text x="920" y="570" font-family="Courier New" font-size="12" fill="#cccccc">aws s3 ls s3://[bucket-name]</text>
+  
+  <text x="910" y="610" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Lambda Function:</text>
+  <text x="910" y="640" font-family="Arial" font-size="14" fill="#212529">Invoke Lambda function via terminal:</text>
+  <rect x="910" y="655" width="250" height="60" rx="5" fill="#343a40" />
+  <text x="920" y="675" font-family="Courier New" font-size="12" fill="#cccccc">aws lambda invoke --function-name</text>
+  <text x="920" y="695" font-family="Courier New" font-size="12" fill="#cccccc">[function-name] output.txt</text>
+</svg>

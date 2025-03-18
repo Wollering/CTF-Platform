@@ -1,0 +1,341 @@
+# CTF Platform Architecture & Technical Specification
+
+## System Architecture Overview
+
+```
+┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
+│                     │     │                     │     │                     │
+│   React Frontend    │────▶│   API Gateway       │────▶│   Lambda Functions  │
+│                     │     │                     │     │                     │
+└─────────────────────┘     └─────────────────────┘     └──────────┬──────────┘
+                                                                   │
+┌─────────────────────┐     ┌─────────────────────┐     ┌──────────▼──────────┐
+│                     │     │                     │     │                     │
+│   CloudFront CDN    │◀────│   S3 Static Assets  │     │   DynamoDB Tables   │
+│                     │     │                     │     │                     │
+└─────────────────────┘     └─────────────────────┘     └─────────────────────┘
+                                                                   ▲
+┌─────────────────────┐     ┌─────────────────────┐     ┌──────────┴──────────┐
+│                     │     │                     │     │                     │
+│   Cognito Auth      │────▶│   CloudFormation    │────▶│ Lambda Environment  │
+│                     │     │                     │     │ Provisioner         │
+└─────────────────────┘     └─────────────────────┘     └─────────────────────┘
+```
+
+## Service Components
+
+### Frontend (React + Redux)
+- Single-page application hosted on S3 and distributed via CloudFront
+- Secure authentication using AWS Amplify integration with Cognito
+- Responsive design for both desktop and mobile interfaces
+- Real-time updates using WebSockets (API Gateway)
+
+### API Layer
+- RESTful API endpoints defined in API Gateway
+- JWT-based authentication with Cognito
+- Rate limiting and request validation
+- API versioning strategy
+
+### Core Services (Lambda Functions)
+1. **User Management**
+   - Registration, authentication, profile management
+   - Team creation and management
+   - Role-based access control
+
+2. **Challenge System**
+   - Challenge metadata and content delivery
+   - Submission validation logic
+   - Hint delivery system
+   - Scoring engine
+
+3. **Environment Provisioner**
+   - CloudFormation template orchestration
+   - Isolated AWS account provisioning
+   - Environment configuration
+   - Resource monitoring and limits
+
+4. **Analytics Engine**
+   - User progress tracking
+   - Platform usage statistics
+   - Performance metrics
+   - Administrative dashboards
+
+### Data Layer
+- DynamoDB tables with global secondary indexes for query optimization
+- S3 for challenge assets and user uploads
+- ElastiCache for session data and leaderboards
+- Parameter Store for configuration and secrets
+
+## Database Schema
+
+### Users Table
+```json
+{
+  "userId": "string (primary key)",
+  "email": "string (GSI)",
+  "username": "string (GSI)",
+  "hashedPassword": "string",
+  "fullName": "string",
+  "role": "string (admin, user)",
+  "teamId": "string (optional)",
+  "createdAt": "timestamp",
+  "lastLogin": "timestamp",
+  "profilePicture": "string (S3 URL)"
+}
+```
+
+### Teams Table
+```json
+{
+  "teamId": "string (primary key)",
+  "teamName": "string (GSI)",
+  "captainId": "string (userId)",
+  "members": "list<string> (userIds)",
+  "createdAt": "timestamp",
+  "inviteCodes": "list<string>",
+  "profilePicture": "string (S3 URL)"
+}
+```
+
+### Challenges Table
+```json
+{
+  "challengeId": "string (primary key)",
+  "title": "string",
+  "description": "string",
+  "category": "string (GSI)",
+  "difficulty": "number (1-5)",
+  "points": "number",
+  "author": "string",
+  "createdAt": "timestamp",
+  "updatedAt": "timestamp",
+  "isActive": "boolean",
+  "templateUrl": "string (S3/CloudFormation)",
+  "hints": "list<object>",
+  "validationStrategy": "string (lambda function name)",
+  "successRate": "number",
+  "avgCompletionTime": "number"
+}
+```
+
+### Submissions Table
+```json
+{
+  "submissionId": "string (primary key)",
+  "challengeId": "string (GSI)",
+  "userId": "string (GSI)",
+  "teamId": "string (GSI, optional)",
+  "timestamp": "timestamp (sort key)",
+  "status": "string (pending, correct, incorrect)",
+  "attempt": "string",
+  "points": "number",
+  "timeTaken": "number",
+  "hintsUsed": "number",
+  "environmentId": "string"
+}
+```
+
+### Environments Table
+```json
+{
+  "environmentId": "string (primary key)",
+  "userId": "string (GSI)",
+  "teamId": "string (GSI, optional)",
+  "challengeId": "string (GSI)",
+  "stackId": "string (CloudFormation)",
+  "status": "string (provisioning, active, terminated)",
+  "createdAt": "timestamp",
+  "expiresAt": "timestamp",
+  "resources": "list<object>",
+  "credentials": "string (encrypted)",
+  "accessUrl": "string"
+}
+```
+
+## API Endpoints
+
+### Authentication
+- `POST /auth/register` - Create new user account
+- `POST /auth/login` - Authenticate user
+- `POST /auth/refresh` - Refresh access token
+- `GET /auth/profile` - Get user profile
+- `PUT /auth/profile` - Update user profile
+
+### Teams
+- `POST /teams` - Create a new team
+- `GET /teams/{teamId}` - Get team details
+- `PUT /teams/{teamId}` - Update team details
+- `POST /teams/{teamId}/members` - Add team member
+- `DELETE /teams/{teamId}/members/{userId}` - Remove team member
+
+### Challenges
+- `GET /challenges` - List all challenges
+- `GET /challenges/{challengeId}` - Get challenge details
+- `POST /challenges/{challengeId}/start` - Start a challenge
+- `POST /challenges/{challengeId}/submit` - Submit a solution
+- `GET /challenges/{challengeId}/hints/{hintId}` - Get a specific hint
+
+### Admin
+- `POST /admin/challenges` - Create a new challenge
+- `PUT /admin/challenges/{challengeId}` - Update a challenge
+- `GET /admin/statistics` - Get platform statistics
+- `GET /admin/users` - Manage users
+- `GET /admin/environments` - Monitor active environments
+
+### Leaderboard
+- `GET /leaderboard/users` - Get individual leaderboard
+- `GET /leaderboard/teams` - Get team leaderboard
+
+## Environment Provisioning System
+
+### CloudFormation Template Structure
+```yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CTF Challenge Environment'
+
+Parameters:
+  ChallengeId:
+    Type: String
+  UserId:
+    Type: String
+  TeamId:
+    Type: String
+    Default: ''
+  
+Resources:
+  # Challenge-specific resources here
+  ChallengeVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub "ctf-vpc-${ChallengeId}"
+
+  # More resources as needed for the specific challenge
+  
+  # Example: Vulnerable web server
+  WebServerInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-12345678
+      SecurityGroupIds:
+        - !Ref WebServerSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          # Setup vulnerable web application
+          
+  # Access and secrets bucket for file exchange
+  ChallengeDataBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      AccessControl: Private
+      LifecycleConfiguration:
+        Rules:
+          - ExpirationInDays: 1
+            Status: Enabled
+
+Outputs:
+  EnvironmentAccessUrl:
+    Description: URL to access the challenge environment
+    Value: !Sub "https://${WebServerInstance.PublicDnsName}"
+  
+  DataBucketName:
+    Description: S3 bucket for challenge data exchange
+    Value: !Ref ChallengeDataBucket
+```
+
+### Environment Management Lambda Functions
+1. **ProvisionEnvironment** - Creates and configures a new isolated environment
+2. **MonitorEnvironment** - Checks for resource usage and availability
+3. **ValidateChallenge** - Verifies if a challenge has been completed
+4. **TerminateEnvironment** - Cleans up resources when a challenge is completed or expired
+
+## Security Considerations
+
+### Authentication & Authorization
+- JWT with short expiration times
+- Refresh token rotation
+- Role-based access control
+- Session invalidation on suspicious activity
+
+### API Security
+- Input validation on all endpoints
+- Rate limiting to prevent brute force attacks
+- CORS configuration for frontend access
+- Request size limitations
+
+### Infrastructure Security
+- Least privilege permission model
+- Resource isolation between users/teams
+- Temporary credentials for challenge environments
+- Regular rotation of encryption keys
+- CloudTrail logging for all administrative actions
+
+### Challenge Environment Security
+- Network isolation using VPC configuration
+- Resource quotas to prevent abuse
+- Automatic termination of inactive environments
+- Sanitization of user-provided inputs
+
+## Monitoring & Analytics
+
+### Performance Metrics
+- API response times and error rates
+- Lambda function execution statistics
+- DynamoDB read/write capacity usage
+- Environment provisioning success rate
+
+### Business Metrics
+- User registration and retention
+- Challenge completion rates
+- Average time spent per challenge
+- Hint usage statistics
+
+### Cost Metrics
+- Lambda execution costs
+- Data transfer costs
+- Storage costs (S3, DynamoDB)
+- CloudFormation resource usage
+
+## Deployment Strategy
+
+### Infrastructure as Code
+- All resources defined in CloudFormation templates
+- Environment-specific configuration via Parameter Store
+- CI/CD pipeline integration
+
+### Release Process
+1. Deploy backend services (Lambda, DynamoDB)
+2. Update API Gateway configuration
+3. Deploy updated frontend to S3 staging
+4. Run integration tests
+5. Promote to production
+
+### Rollback Procedure
+1. Identify failing component
+2. Revert to previous known good version
+3. Run validation tests
+4. Update monitoring alerts
+
+## Cost Optimization
+
+### Serverless Resource Management
+- Optimize Lambda memory allocation
+- Configure appropriate timeouts
+- Use provisioned concurrency for predictable loads
+
+### Challenge Environment Costs
+- Implement automatic cleanup of inactive environments
+- Use spot instances where appropriate
+- Set resource limits on user-provisioned environments
+
+### Storage Optimization
+- Implement lifecycle policies on S3 buckets
+- Use compression for stored challenge assets
+- Configure TTL on DynamoDB items for temporary data

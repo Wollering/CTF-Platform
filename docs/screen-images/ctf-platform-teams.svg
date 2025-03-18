@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <!-- Main background -->
+  <rect width="1200" height="900" fill="#f8f9fa" />
+  
+  <!-- Header navigation bar -->
+  <rect x="0" y="0" width="1200" height="60" fill="#343a40" />
+  
+  <!-- Logo -->
+  <rect x="20" y="15" width="30" height="30" rx="5" fill="#61afef" />
+  <text x="60" y="35" font-family="Arial" font-size="18" font-weight="bold" fill="white">CTF Platform</text>
+  
+  <!-- Navigation items -->
+  <text x="220" y="35" font-family="Arial" font-size="16" fill="white">Dashboard</text>
+  <text x="350" y="35" font-family="Arial" font-size="16" fill="white">Challenges</text>
+  <text x="470" y="35" font-family="Arial" font-size="16" fill="white">Leaderboard</text>
+  <text x="600" y="35" font-family="Arial" font-size="16" font-weight="bold" fill="#61afef">Teams</text>
+  
+  <!-- User profile -->
+  <circle cx="1140" cy="30" r="20" fill="#6c757d" />
+  <text x="1140" y="35" font-family="Arial" font-size="14" fill="white" text-anchor="middle">JD</text>
+  <text x="1090" y="35" font-family="Arial" font-size="16" fill="white">johndoe</text>
+  
+  <!-- Points display -->
+  <text x="970" y="35" font-family="Arial" font-size="16" fill="white">850 points</text>
+  
+  <!-- Main content area -->
+  <rect x="20" y="80" width="1160" height="800" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  
+  <!-- Team Info Section -->
+  <rect x="40" y="100" width="1120" height="160" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  
+  <!-- Team banner -->
+  <text x="60" y="130" font-family="Arial" font-size="24" font-weight="bold" fill="#212529">Your Team: Security Innovators</text>
+  <rect x="60" y="140" width="150" height="5" fill="#007bff" />
+  
+  <!-- Team stats cards -->
+  <rect x="60" y="160" width="200" height="80" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="80" y="185" font-family="Arial" font-size="14" fill="#6c757d">Team Rank</text>
+  <text x="80" y="215" font-family="Arial" font-size="22" font-weight="bold" fill="#007bff">#3 of 42</text>
+  
+  <rect x="280" y="160" width="200" height="80" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="300" y="185" font-family="Arial" font-size="14" fill="#6c757d">Total Points</text>
+  <text x="300" y="215" font-family="Arial" font-size="22" font-weight="bold" fill="#212529">4,250</text>
+  
+  <rect x="500" y="160" width="200" height="80" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="520" y="185" font-family="Arial" font-size="14" fill="#6c757d">Challenges Completed</text>
+  <text x="520" y="215" font-family="Arial" font-size="22" font-weight="bold" fill="#212529">28/45</text>
+  
+  <rect x="720" y="160" width="200" height="80" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="740" y="185" font-family="Arial" font-size="14" fill="#6c757d">Team Members</text>
+  <text x="740" y="215" font-family="Arial" font-size="22" font-weight="bold" fill="#212529">5</text>
+  
+  <!-- Action buttons -->
+  <rect x="940" y="160" width="220" height="40" rx="5" fill="#28a745" />
+  <text x="1050" y="185" font-family="Arial" font-size="16" fill="white" text-anchor="middle">Invite Member</text>
+  
+  <rect x="940" y="210" width="220" height="40" rx="5" fill="white" stroke="#6c757d" stroke-width="1" />
+  <text x="1050" y="235" font-family="Arial" font-size="16" fill="#6c757d" text-anchor="middle">Team Settings</text>
+  
+  <!-- Team tabs -->
+  <rect x="40" y="280" width="1120" height="50" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  
+  <rect x="60" y="290" width="150" height="30" rx="5" fill="#007bff" />
+  <text x="135" y="310" font-family="Arial" font-size="16" font-weight="bold" fill="white" text-anchor="middle">Members</text>
+  
+  <rect x="220" y="290" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="295" y="310" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Progress</text>
+  
+  <rect x="380" y="290" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="455" y="310" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Achievements</text>
+  
+  <!-- Member list section -->
+  <!-- Header row -->
+  <rect x="40" y="350" width="1120" height="40" fill="#f8f9fa" />
+  <text x="60" y="375" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Member</text>
+  <text x="400" y="375" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Role</text>
+  <text x="550" y="375" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Challenges Solved</text>
+  <text x="800" y="375" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Last Activity</text>
+  <text x="1020" y="375" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Points</text>
+  <text x="1100" y="375" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Actions</text>
+  
+  <!-- Member 1 - Team Captain (Current User) -->
+  <rect x="40" y="390" width="1120" height="70" fill="#e6f7ff" stroke="#61afef" stroke-width="2" />
+  <circle cx="80" cy="425" r="25" fill="#6c757d" />
+  <text x="80" y="431" font-family="Arial" font-size="16" fill="white" text-anchor="middle">JD</text>
+  <text x="120" y="420" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">John Doe (You)</text>
+  <text x="120" y="445" font-family="Arial" font-size="14" fill="#6c757d">johndoe@example.com</text>
+  
+  <rect x="400" y="415" width="100" height="24" rx="12" fill="#dc3545" />
+  <text x="450" y="432" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Captain</text>
+  
+  <text x="550" y="425" font-family="Arial" font-size="16" fill="#212529">12/45</text>
+  <rect x="630" y="415" width="120" height="16" rx="8" fill="#e9ecef" />
+  <rect x="630" y="415" width="32" height="16" rx="8" fill="#007bff" />
+  
+  <text x="800" y="425" font-family="Arial" font-size="16" fill="#212529">Just now</text>
+  
+  <text x="1020" y="425" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">850</text>
+  
+  <rect x="1090" y="412" width="30" height="25" rx="5" fill="transparent" />
+  <text x="1105" y="430" font-family="Arial" font-size="18" fill="#6c757d" text-anchor="middle">⋮</text>
+  
+  <!-- Member 2 -->
+  <rect x="40" y="460" width="1120" height="70" fill="white" />
+  <circle cx="80" cy="495" r="25" fill="#6c757d" />
+  <text x="80" y="501" font-family="Arial" font-size="16" fill="white" text-anchor="middle">AS</text>
+  <text x="120" y="490" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Alice Smith</text>
+  <text x="120" y="515" font-family="Arial" font-size="14" fill="#6c757d">alice@example.com</text>
+  
+  <rect x="400" y="485" width="100" height="24" rx="12" fill="#28a745" />
+  <text x="450" y="502" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Member</text>
+  
+  <text x="550" y="495" font-family="Arial" font-size="16" fill="#212529">25/45</text>
+  <rect x="630" y="485" width="120" height="16" rx="8" fill="#e9ecef" />
+  <rect x="630" y="485" width="67" height="16" rx="8" fill="#28a745" />
+  
+  <text x="800" y="495" font-family="Arial" font-size="16" fill="#212529">1 hour ago</text>
+  
+  <text x="1020" y="495" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">1,950</text>
+  
+  <rect x="1090" y="482" width="30" height="25" rx="5" fill="transparent" />
+  <text x="1105" y="500" font-family="Arial" font-size="18" fill="#6c757d" text-anchor="middle">⋮</text>
+  
+  <!-- Member 3 -->
+  <rect x="40" y="530" width="1120" height="70" fill="#f8f9fa" />
+  <circle cx="80" cy="565" r="25" fill="#6c757d" />
+  <text x="80" y="571" font-family="Arial" font-size="16" fill="white" text-anchor="middle">BJ</text>
+  <text x="120" y="560" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Bob Johnson</text>
+  <text x="120" y="585" font-family="Arial" font-size="14" fill="#6c757d">bob@example.com</text>
+  
+  <rect x="400" y="555" width="100" height="24" rx="12" fill="#28a745" />
+  <text x="450" y="572" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Member</text>
+  
+  <text x="550" y="565" font-family="Arial" font-size="16" fill="#212529">19/45</text>
+  <rect x="630" y="555" width="120" height="16" rx="8" fill="#e9ecef" />
+  <rect x="630" y="555" width="51" height="16" rx="8" fill="#17a2b8" />
+  
+  <text x="800" y="565" font-family="Arial" font-size="16" fill="#212529">3 hours ago</text>
+  
+  <text x="1020" y="565" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">1,450</text>
+  
+  <rect x="1090" y="552" width="30" height="25" rx="5" fill="transparent" />
+  <text x="1105" y="570" font-family="Arial" font-size="18" fill="#6c757d" text-anchor="middle">⋮</text>
+  
+  <!-- Member 4 -->
+  <rect x="40" y="600" width="1120" height="70" fill="white" />
+  <circle cx="80" cy="635" r="25" fill="#6c757d" />
+  <text x="80" y="641" font-family="Arial" font-size="16" fill="white" text-anchor="middle">CW</text>
+  <text x="120" y="630" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Charlie Williams</text>
+  <text x="120" y="655" font-family="Arial" font-size="14" fill="#6c757d">charlie@example.com</text>
+  
+  <rect x="400" y="625" width="100" height="24" rx="12" fill="#28a

@@ -1,0 +1,28 @@
+{
+  "name": "ctf-platform",
+  "version": "1.0.0",
+  "description": "Capture The Flag (CTF) Platform",
+  "main": "index.js",
+  "scripts": {
+    "client": "cd client && npm start",
+    "server": "cd server && nodemon index.js",
+    "lambda:local": "cd server && serverless offline",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "build": "cd client && npm run build",
+    "deploy:dev": "cd server && serverless deploy --stage dev",
+    "deploy:prod": "cd server && serverless deploy --stage prod"
+  },
+  "keywords": [
+    "ctf",
+    "security",
+    "challenges",
+    "hacking",
+    "cybersecurity"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}

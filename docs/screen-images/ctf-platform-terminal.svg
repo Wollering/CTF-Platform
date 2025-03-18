@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <!-- Main background -->
+  <rect width="1200" height="900" fill="#f8f9fa" />
+  
+  <!-- Header navigation bar -->
+  <rect x="0" y="0" width="1200" height="60" fill="#343a40" />
+  
+  <!-- Logo -->
+  <rect x="20" y="15" width="30" height="30" rx="5" fill="#61afef" />
+  <text x="60" y="35" font-family="Arial" font-size="18" font-weight="bold" fill="white">CTF Platform</text>
+  
+  <!-- Navigation items -->
+  <text x="220" y="35" font-family="Arial" font-size="16" fill="white">Dashboard</text>
+  <text x="350" y="35" font-family="Arial" font-size="16" fill="white">Challenges</text>
+  <text x="470" y="35" font-family="Arial" font-size="16" fill="white">Leaderboard</text>
+  <text x="600" y="35" font-family="Arial" font-size="16" fill="white">Teams</text>
+  
+  <!-- User profile -->
+  <circle cx="1140" cy="30" r="20" fill="#6c757d" />
+  <text x="1140" y="35" font-family="Arial" font-size="14" fill="white" text-anchor="middle">JD</text>
+  <text x="1090" y="35" font-family="Arial" font-size="16" fill="white">johndoe</text>
+  
+  <!-- Challenge environment area -->
+  <rect x="20" y="80" width="1160" height="800" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  
+  <!-- Challenge name and status bar -->
+  <rect x="20" y="80" width="1160" height="60" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="40" y="120" font-family="Arial" font-size="20" font-weight="bold" fill="#212529">SQL Injection Challenge</text>
+  
+  <!-- Status badges -->
+  <rect x="850" y="96" width="80" height="28" rx="14" fill="#28a745" />
+  <text x="890" y="115" font-family="Arial" font-size="14" font-weight="bold" fill="white" text-anchor="middle">ACTIVE</text>
+  
+  <!-- Timer -->
+  <text x="950" y="120" font-family="Arial" font-size="16" fill="#212529">03:45:12</text>
+  
+  <!-- Challenge tabs -->
+  <rect x="20" y="140" width="1160" height="50" rx="0" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  
+  <rect x="40" y="150" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="115" y="170" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Description</text>
+  
+  <rect x="200" y="150" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="275" y="170" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Resources</text>
+  
+  <rect x="360" y="150" width="150" height="30" rx="5" fill="#007bff" />
+  <text x="435" y="170" font-family="Arial" font-size="16" font-weight="bold" fill="white" text-anchor="middle">Terminal</text>
+  
+  <rect x="520" y="150" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="595" y="170" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Hints</text>
+  
+  <rect x="680" y="150" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="755" y="170" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Guide</text>
+  
+  <!-- Terminal toolbar -->
+  <rect x="40" y="210" width="830" height="40" rx="5" fill="#343a40" />
+  <text x="60" y="235" font-family="Arial" font-size="14" fill="#28a745">● Connected</text>
+  
+  <rect x="680" y="215" width="30" height="30" rx="5" fill="#444" />
+  <text x="695" y="237" font-family="Arial" font-size="14" fill="white" text-anchor="middle">⌕</text>
+  
+  <rect x="720" y="215" width="30" height="30" rx="5" fill="#444" />
+  <text x="735" y="237" font-family="Arial" font-size="14" fill="white" text-anchor="middle">◧</text>
+  
+  <rect x="760" y="215" width="30" height="30" rx="5" fill="#444" />
+  <text x="775" y="237" font-family="Arial" font-size="14" fill="white" text-anchor="middle">♺</text>
+  
+  <rect x="800" y="215" width="30" height="30" rx="5" fill="#444" />
+  <text x="815" y="237" font-family="Arial" font-size="14" fill="white" text-anchor="middle">⨯</text>
+  
+  <!-- Terminal window -->
+  <rect x="40" y="250" width="830" height="500" fill="#1e1e1e" />
+  
+  <!-- Terminal content -->
+  <text x="60" y="280" font-family="Courier New" font-size="14" fill="#cccccc">Connected to challenge environment</text>
+  <text x="60" y="300" font-family="Courier New" font-size="14" fill="#cccccc">Type 'help' for available commands.</text>
+  
+  <text x="60" y="340" font-family="Courier New" font-size="14" fill="#cccccc">$ ls -la</text>
+  <text x="60" y="360" font-family="Courier New" font-size="14" fill="#cccccc">total 20</text>
+  <text x="60" y="380" font-family="Courier New" font-size="14" fill="#cccccc">drwxr-xr-x  5 root root 4096 May 10 10:25 .</text>
+  <text x="60" y="400" font-family="Courier New" font-size="14" fill="#cccccc">drwxr-xr-x  3 root root 4096 May 10 10:20 ..</text>
+  <text x="60" y="420" font-family="Courier New" font-size="14" fill="#cccccc">-rw-r--r--  1 root root 2458 May 10 10:22 config.php</text>
+  <text x="60" y="440" font-family="Courier New" font-size="14" fill="#cccccc">-rw-r--r--  1 root root 3721 May 10 10:22 index.php</text>
+  <text x="60" y="460" font-family="Courier New" font-size="14" fill="#cccccc">drwxr-xr-x  2 root root 4096 May 10 10:23 uploads</text>
+  <text x="60" y="480" font-family="Courier New" font-size="14" fill="#cccccc">-rw-r--r--  1 root root 1843 May 10 10:22 search.php</text>
+  
+  <text x="60" y="520" font-family="Courier New" font-size="14" fill="#cccccc">$ cat search.php</text>
+  <text x="60" y="540" font-family="Courier New" font-size="14" fill="#4ec9b0">&lt;?php</text>
+  <text x="60" y="560" font-family="Courier New" font-size="14" fill="#cccccc">include_once("config.php");</text>
+  
+  <text x="60" y="580" font-family="Courier New" font-size="14" fill="#569cd6">if</text>
+  <text x="75" y="580" font-family="Courier New" font-size="14" fill="#cccccc"> (isset($_GET['query'])) {</text>
+  <text x="60" y="600" font-family="Courier New" font-size="14" fill="#cccccc">    $query = $_GET['query'];</text>
+  <text x="60" y="620" font-family="Courier New" font-size="14" fill="#dcdcaa">    $sql</text>
+  <text x="90" y="620" font-family="Courier New" font-size="14" fill="#cccccc"> = "SELECT * FROM products WHERE name LIKE '%".$query."%'";</text>
+  <text x="60" y="640" font-family="Courier New" font-size="14" fill="#cccccc">    $result = mysqli_query($conn, $sql);</text>
+  <text x="60" y="660" font-family="Courier New" font-size="14" fill="#cccccc">    // ...</text>
+  <text x="60" y="680" font-family="Courier New" font-size="14" fill="#4ec9b0">?&gt;</text>
+  
+  <text x="60" y="720" font-family="Courier New" font-size="14" fill="#cccccc">$ </text>
+  <text x="75" y="720" font-family="Courier New" font-size="14" fill="white">_</text>
+  
+  <!-- Right sidebar -->
+  <rect x="890" y="210" width="290" height="540" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  
+  <!-- Terminal help section -->
+  <text x="910" y="240" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Terminal Help</text>
+  
+  <rect x="910" y="260" width="250" height="1" fill="#dee2e6" />
+  
+  <text x="910" y="290" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Common Commands:</text>
+  
+  <text x="910" y="320" font-family="Arial" font-size="14" fill="#212529">ls -la</text>
+  <text x="910" y="340" font-family="Arial" font-size="14" fill="#6c757d">List all files in directory</text>
+  
+  <text x="910" y="370" font-family="Arial" font-size="14" fill="#212529">cat [filename]</text>
+  <text x="910" y="390" font-family="Arial" font-size="14" fill="#6c757d">Display file contents</text>
+  
+  <text x="910" y="420" font-family="Arial" font-size="14" fill="#212529">grep [pattern] [file]</text>
+  <text x="910" y="440" font-family="Arial" font-size="14" fill="#6c757d">Search for text patterns</text>
+  
+  <text x="910" y="470" font-family="Arial" font-size="14" fill="#212529">mysql -u [user] -p</text>
+  <text x="910" y="490" font-family="Arial" font-size="14" fill="#6c757d">Connect to MySQL database</text>
+  
+  <text x="910" y="520" font-family="Arial" font-size="14" fill="#212529">curl [url]</text>
+  <text x="910" y="540" font-family="Arial" font-size="14" fill="#6c757d">Make HTTP requests</text>
+  
+  <text x="910" y="570" font-family="Arial" font-size="14" fill="#212529">python -c "command"</text>
+  <text x="910" y="590" font-family="Arial" font-size="14" fill="#6c757d">Execute Python code</text>
+  
+  <text x="910" y="620" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Pro Tip:</text>
+  <text x="910" y="645" font-family="Arial" font-size="14" fill="#212529">Use arrows ↑↓ to navigate</text>
+  <text x="910" y="665" font-family="Arial" font-size="14" fill="#212529">through command history.</text>
+  
+  <!-- Challenge tip -->
+  <rect x="910" y="690" width="250" height="40" rx="5" fill="#cce5ff" />
+  <text x="935" y="715" font-family="Arial" font-size="14" fill="#004085">Tip: Look for SQL injection vulnerabilities</text>
+</svg>

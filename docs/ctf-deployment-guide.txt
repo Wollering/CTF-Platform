@@ -1,0 +1,372 @@
+# CTF Platform Deployment Guide
+
+This guide walks through the process of deploying the AWS Jam-inspired CTF platform using the MERN stack and AWS serverless technologies.
+
+## Prerequisites
+
+Before beginning deployment, ensure you have the following:
+
+1. **AWS Account** with administrative access
+2. **AWS CLI** configured with appropriate credentials
+3. **Node.js** (v16.x or later) and NPM installed
+4. **Serverless Framework** installed globally (`npm install -g serverless`)
+5. **MongoDB Atlas** account (for database hosting)
+6. **Git** for version control
+
+## Deployment Steps
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-org/ctf-platform.git
+cd ctf-platform
+```
+
+### 2. Configure Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```
+# AWS Configuration
+AWS_REGION=us-east-1
+STAGE=dev
+
+# MongoDB Configuration
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/ctf-platform
+
+# JWT Configuration
+JWT_SECRET=your-secret-key
+JWT_EXPIRATION=8h
+
+# Admin User Configuration
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=secure-password
+
+# Frontend Configuration
+FRONTEND_URL=https://your-domain.com
+```
+
+### 3. Deploy Backend Services
+
+#### 3.1 Create Parameter Store Values
+
+Set up the required parameters in AWS SSM Parameter Store:
+
+```bash
+# Create JWT secret
+aws ssm put-parameter \
+  --name /ctf-platform/dev/jwt-secret \
+  --value "your-secret-key" \
+  --type SecureString
+
+# Create CORS origin
+aws ssm put-parameter \
+  --name /ctf-platform/dev/cors-origin \
+  --value "https://your-domain.com" \
+  --type String
+
+# Create MongoDB URI
+aws ssm put-parameter \
+  --name /ctf-platform/dev/mongodb-uri \
+  --value "mongodb+srv://username:password@cluster.mongodb.net/ctf-platform" \
+  --type SecureString
+```
+
+#### 3.2 Deploy Serverless Backend
+
+```bash
+cd backend
+npm install
+serverless deploy
+```
+
+This will deploy:
+- Lambda functions
+- API Gateway
+- DynamoDB tables
+- Cognito User Pool
+- IAM roles and policies
+- CloudWatch Logs
+
+### 4. Set Up Frontend
+
+#### 4.1 Configure API Endpoint
+
+In the frontend directory, update the configuration:
+
+```bash
+cd ../frontend
+```
+
+Edit `src/config.js` with the API endpoint:
+
+```javascript
+// src/config.js
+const config = {
+  apiUrl: 'https://your-api-id.execute-api.us-east-1.amazonaws.com/dev',
+  cognitoRegion: 'us-east-1',
+  cognitoUserPoolId: 'us-east-1_xxxxxxxx',
+  cognitoClientId: 'xxxxxxxxxxxxxxxxxxxxxxxxxx'
+};
+
+export default config;
+```
+
+#### 4.2 Build and Deploy Frontend
+
+```bash
+npm install
+npm run build
+```
+
+Deploy the build to S3:
+
+```bash
+aws s3 sync build/ s3://ctf-platform-assets-dev
+
+# Invalidate CloudFront cache
+aws cloudfront create-invalidation --distribution-id YOUR_DISTRIBUTION_ID --paths "/*"
+```
+
+### 5. Initial Setup and Data Loading
+
+#### 5.1 Create Admin User
+
+Execute the admin user creation Lambda function:
+
+```bash
+aws lambda invoke \
+  --function-name ctf-platform-dev-createAdminUser \
+  --payload '{"email":"admin@example.com","password":"secure-password"}' \
+  response.json
+```
+
+#### 5.2 Import Initial Challenges
+
+Execute the challenge import Lambda function:
+
+```bash
+aws lambda invoke \
+  --function-name ctf-platform-dev-importChallenges \
+  --payload '{"challengesPath":"s3://ctf-platform-assets-dev/challenges/initial-challenges.json"}' \
+  response.json
+```
+
+### 6. Set Up Challenge Environments
+
+#### 6.1 Prepare Challenge Templates
+
+Create CloudFormation templates for each challenge type and upload them to S3:
+
+```bash
+cd ../challenges
+
+# Upload templates
+aws s3 cp templates/ s3://ctf-platform-assets-dev/challenge-templates/ --recursive
+```
+
+#### 6.2 Configure Challenge Validation
+
+Ensure the validation Lambda functions are deployed:
+
+```bash
+cd ../validators
+serverless deploy
+```
+
+### 7. Verify Deployment
+
+#### 7.1 Test API Endpoints
+
+```bash
+# Test authentication
+curl -X POST https://your-api-id.execute-api.us-east-1.amazonaws.com/dev/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"secure-password"}'
+
+# Test challenges endpoint
+curl -X GET https://your-api-id.execute-api.us-east-1.amazonaws.com/dev/api/challenges \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+#### 7.2 Access Frontend
+
+Visit your deployed frontend at the CloudFront URL or custom domain.
+
+## Common Issues and Troubleshooting
+
+### CORS Errors
+
+If you encounter CORS errors:
+
+1. Verify the `cors-origin` parameter in SSM
+2. Check API Gateway CORS configuration:
+
+```bash
+aws apigateway update-rest-api \
+  --rest-api-id YOUR_API_ID \
+  --patch-operations op=replace,path=/corsConfiguration/allowOrigins,value='["https://your-domain.com"]'
+```
+
+### Serverless Deployment Failures
+
+If serverless deployment fails:
+
+1. Check CloudFormation error in AWS Console
+2. Verify IAM permissions
+3. Try deploying with debug info:
+
+```bash
+serverless deploy --verbose
+```
+
+### Connection Issues with MongoDB
+
+If there are MongoDB connection issues:
+
+1. Verify the MongoDB URI in SSM
+2. Check VPC configurations
+3. Ensure IP whitelist includes AWS Lambda ranges
+
+## Scaling Considerations
+
+### DynamoDB Capacity
+
+Initially, DynamoDB tables use on-demand capacity. For cost optimization with predictable loads:
+
+```bash
+aws dynamodb update-table \
+  --table-name ctf-platform-users-dev \
+  --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
+```
+
+### Lambda Concurrency
+
+For large-scale CTF events, configure Lambda concurrency:
+
+```bash
+aws lambda put-function-concurrency \
+  --function-name ctf-platform-dev-api \
+  --reserved-concurrent-executions 100
+```
+
+### CloudFront Distribution
+
+For global events, adjust CloudFront settings:
+
+```bash
+aws cloudfront update-distribution \
+  --id YOUR_DISTRIBUTION_ID \
+  --default-cache-behavior '{"MinTTL":60,"DefaultTTL":3600,"MaxTTL":86400}'
+```
+
+## Maintenance Tasks
+
+### Database Backups
+
+Set up regular backups of MongoDB data:
+
+```bash
+# Execute backup Lambda function
+aws lambda invoke \
+  --function-name ctf-platform-dev-backupDatabase \
+  --payload '{"destination":"s3://ctf-platform-backups/mongodb"}' \
+  response.json
+```
+
+### Log Management
+
+Configure log retention and analysis:
+
+```bash
+# Set log retention for API logs
+aws logs put-retention-policy \
+  --log-group-name /aws/lambda/ctf-platform-dev-api \
+  --retention-in-days 14
+```
+
+### Security Updates
+
+Regular security updates:
+
+```bash
+# Update dependencies
+cd backend
+npm audit fix
+
+cd ../frontend
+npm audit fix
+
+# Redeploy
+serverless deploy
+```
+
+## Adding New Challenges
+
+To add new challenges to the platform:
+
+1. Create the challenge definition JSON
+2. Develop the CloudFormation template for the challenge environment
+3. Implement the validation logic
+4. Upload resources to S3
+5. Use the admin interface to add the challenge to the platform
+
+Example challenge definition:
+
+```json
+{
+  "title": "SQL Injection 101",
+  "description": "Exploit a simple SQL injection vulnerability to bypass login.",
+  "category": "web",
+  "difficulty": 2,
+  "points": 100,
+  "templateUrl": "s3://ctf-platform-assets-dev/challenge-templates/sql-injection-basic.yml",
+  "validationStrategy": "sqlInjectionValidator",
+  "hints": [
+    {
+      "content": "Have you tried using single quotes in the input?",
+      "cost": 10
+    },
+    {
+      "content": "Try using 'OR 1=1 --' to bypass the login",
+      "cost": 20
+    }
+  ]
+}
+```
+
+## Cleanup
+
+To tear down the entire platform:
+
+```bash
+# Delete frontend resources
+aws s3 rm s3://ctf-platform-assets-dev --recursive
+aws cloudformation delete-stack --stack-name ctf-platform-frontend
+
+# Delete backend resources
+cd backend
+serverless remove
+
+# Delete parameters
+aws ssm delete-parameter --name /ctf-platform/dev/jwt-secret
+aws ssm delete-parameter --name /ctf-platform/dev/cors-origin
+aws ssm delete-parameter --name /ctf-platform/dev/mongodb-uri
+```
+
+## Security Best Practices
+
+1. **Regular Auditing**: Periodically review IAM permissions and access logs
+2. **Secret Rotation**: Rotate JWT secrets and database credentials
+3. **Penetration Testing**: Conduct regular penetration tests on the platform
+4. **Dependency Updates**: Keep all NPM packages and AWS services updated
+5. **Data Encryption**: Ensure all sensitive data is encrypted at rest and in transit
+6. **Access Control**: Implement least privilege access for all components
+7. **Monitoring**: Set up alerts for suspicious activities
+
+## Support and Resources
+
+- **Documentation**: Full documentation available at `/docs`
+- **Issue Tracker**: Report issues on the GitHub repository
+- **Slack Channel**: Join #ctf-platform-support for assistance
+- **AWS Resources**: [AWS Serverless Documentation](https://docs.aws.amazon.com/serverless-application-model/)

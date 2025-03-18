@@ -1,0 +1,60 @@
+**Core System Architecture**
+The CTF platform combines the MERN stack (MongoDB, Express.js, React, Node.js) with AWS serverless technologies to create a scalable, flexible environment for cybersecurity challenges. The system includes:
+
+* Frontend Components - React-based interface with user authentication, challenge catalog, real-time scoring, and team collaboration features
+
+* Backend Services - Express.js and Node.js running on AWS Lambda with API Gateway, handling challenge management, scoring validation, and user progress tracking
+
+* Database Structure - MongoDB with document schemas for users, teams, challenges, submissions, and environments
+
+* AWS Serverless Implementation - Full serverless architecture including:
+	* 	API Gateway for REST endpoints
+	* 	Lambda functions for backend logic
+	* 	DynamoDB for persistence
+	* 	CloudFormation for infrastructure as code
+	* 	S3 for static assets
+	* 	Cognito for authentication
+
+* Challenge Environment Management
+A critical aspect of the system is the isolated challenge environment provisioning:
+
+* Environment Provisioner - Creates isolated AWS resources for each participant or team using CloudFormation templates
+Challenge Validator - Verifies challenge completion through specialized Lambda functions for different challenge types (web security, cloud security, cryptography, etc.)
+Resource Cleanup - Automatically terminates inactive environments to control costs
+
+**Key Features**
+The platform supports a wide range of cybersecurity challenge types:
+
+* Web application security (SQL injection, XSS)
+* Network security
+* Cloud security specific to AWS
+* Cryptography
+* Forensics
+* Reverse engineering
+
+Each challenge includes:
+
+Difficulty rating and point values
+* Hint progression system
+* Automated validation
+* Progress tracking
+* Real-time feedback
+
+**Implementation Guide**
+The artifacts created provide:
+
+* System Architecture Overview - Detailed technical specifications of all system components
+* Core Implementation Examples - Code samples for key backend and frontend components
+* Challenge CloudFormation Template - Example template for creating an isolated challenge environment
+* Lambda Challenge Validators - Implementation of various challenge validation functions
+* Deployment Guide - Step-by-step instructions for deploying the platform
+
+**Next Steps**
+To fully implement this platform, you would:
+
+* Start with the system architecture outline to develop the core infrastructure
+* Implement the serverless backend components using the provided code examples
+* Develop the React frontend with challenge management interface
+* Create CloudFormation templates for different challenge types
+* Implement validation functions for each challenge category
+* Follow the deployment guide to set up the platform

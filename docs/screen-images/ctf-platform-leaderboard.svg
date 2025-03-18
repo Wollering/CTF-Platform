@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <!-- Main background -->
+  <rect width="1200" height="900" fill="#f8f9fa" />
+  
+  <!-- Header navigation bar -->
+  <rect x="0" y="0" width="1200" height="60" fill="#343a40" />
+  
+  <!-- Logo -->
+  <rect x="20" y="15" width="30" height="30" rx="5" fill="#61afef" />
+  <text x="60" y="35" font-family="Arial" font-size="18" font-weight="bold" fill="white">CTF Platform</text>
+  
+  <!-- Navigation items -->
+  <text x="220" y="35" font-family="Arial" font-size="16" fill="white">Dashboard</text>
+  <text x="350" y="35" font-family="Arial" font-size="16" fill="white">Challenges</text>
+  <text x="470" y="35" font-family="Arial" font-size="16" font-weight="bold" fill="#61afef">Leaderboard</text>
+  <text x="600" y="35" font-family="Arial" font-size="16" fill="white">Teams</text>
+  
+  <!-- User profile -->
+  <circle cx="1140" cy="30" r="20" fill="#6c757d" />
+  <text x="1140" y="35" font-family="Arial" font-size="14" fill="white" text-anchor="middle">JD</text>
+  <text x="1090" y="35" font-family="Arial" font-size="16" fill="white">johndoe</text>
+  
+  <!-- Points display -->
+  <text x="970" y="35" font-family="Arial" font-size="16" fill="white">850 points</text>
+  
+  <!-- Main content area -->
+  <rect x="20" y="80" width="1160" height="800" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  
+  <!-- Page title -->
+  <text x="40" y="120" font-family="Arial" font-size="24" font-weight="bold" fill="#212529">Leaderboard</text>
+  
+  <!-- Leaderboard tabs -->
+  <rect x="40" y="140" width="1120" height="50" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  
+  <rect x="60" y="150" width="150" height="30" rx="5" fill="#007bff" />
+  <text x="135" y="170" font-family="Arial" font-size="16" font-weight="bold" fill="white" text-anchor="middle">Individual</text>
+  
+  <rect x="220" y="150" width="150" height="30" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="295" y="170" font-family="Arial" font-size="16" fill="#212529" text-anchor="middle">Team</text>
+  
+  <!-- Search box -->
+  <rect x="840" y="150" width="240" height="30" rx="5" fill="white" stroke="#ced4da" stroke-width="1" />
+  <text x="855" y="170" font-family="Arial" font-size="14" fill="#6c757d">Search users...</text>
+  <rect x="1090" y="150" width="70" height="30" rx="5" fill="#007bff" />
+  <text x="1125" y="170" font-family="Arial" font-size="14" fill="white" text-anchor="middle">Search</text>
+  
+  <!-- Column headers -->
+  <rect x="40" y="210" width="1120" height="40" fill="#f8f9fa" />
+  <text x="70" y="235" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Rank</text>
+  <text x="150" y="235" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">User</text>
+  <text x="550" y="235" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Challenges Completed</text>
+  <text x="800" y="235" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Last Activity</text>
+  <text x="1070" y="235" font-family="Arial" font-size="16" font-weight="bold" fill="#212529">Points</text>
+  
+  <!-- First place - current user highlight -->
+  <rect x="40" y="250" width="1120" height="60" fill="#fff4de" stroke="#ffc107" stroke-width="2" />
+  <text x="70" y="285" font-family="Arial" font-size="18" font-weight="bold" fill="#ffc107">1</text>
+  
+  <circle cx="120" cy="280" r="20" fill="#ffc107" />
+  <text x="120" y="286" font-family="Arial" font-size="16" fill="white" text-anchor="middle">🏆</text>
+  <text x="150" y="285" font-family="Arial" font-size="16" fill="#212529">security_master</text>
+  
+  <text x="550" y="285" font-family="Arial" font-size="16" fill="#212529">32/45</text>
+  <rect x="630" y="273" width="120" height="16" rx="8" fill="#e9ecef" />
+  <rect x="630" y="273" width="85" height="16" rx="8" fill="#ffc107" />
+  
+  <text x="800" y="285" font-family="Arial" font-size="16" fill="#212529">10 minutes ago</text>
+  
+  <text x="1070" y="285" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">2,450</text>
+  
+  <!-- Second place -->
+  <rect x="40" y="310" width="1120" height="60" fill="#f8f9fa" />
+  <text x="70" y="345" font-family="Arial" font-size="18" font-weight="bold" fill="#6c757d">2</text>
+  
+  <circle cx="120" cy="340" r="20" fill="#6c757d" />
+  <text x="120" y="346" font-family="Arial" font-size="16" fill="white" text-anchor="middle">🥈</text>
+  <text x="150" y="345" font-family="Arial" font-size="16" fill="#212529">hackerman</text>
+  
+  <text x="550" y="345" font-family="Arial" font-size="16" fill="#212529">28/45</text>
+  <rect x="630" y="333" width="120" height="16" rx="8" fill="#e9ecef" />
+  <rect x="630" y="333" width="75" height="16" rx="8" fill="#6c757d" />
+  
+  <text x="800" y="345" font-family="Arial" font-size="16" fill="#212529">23 minutes ago</text>
+  
+  <text x="1070" y="345" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">2,115</text>
+  
+  <!-- Third place -->
+  <rect x="40" y="370" width="1120" height="60" fill="white" />
+  <text x="70" y="405" font-family="Arial" font-size="18" font-weight="bold" fill="#cd7f32">3</text>
+  
+  <circle cx="120" cy="400" r="20" fill="#cd7f32" />
+  <text x="120" y="406" font-family="Arial" font-size="16" fill="white" text-anchor="middle">🥉</text>
+  <text x="150" y="405" font-family="Arial" font-size="16" fill="#212529">infosec_ninja</text>
+  
+  <text x="550" y="405" font-family="Arial" font-size="16" fill="#212529">25/45</text>
+  <rect x="630" y="393" width="120" height="16" rx="8" fill="#e9ecef" />
+  <rect x="630" y="393" width="67" height="16" rx="8" fill="#cd7f32" />
+  
+  <text x="800" y="405" font-family="Arial" font-size="16" fill="#212529">1 hour ago</text>
+  
+  <text x="1070" y="405" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">1,950</text>
+  
+  <!-- Fourth place - current user -->
+  <rect x="40" y="430" width="1120" height="60" fill="#e6f7ff" stroke="#61afef" stroke-width="2" />
+  <text x="70" y="465" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">4</text>
+  
+  <circle cx="120" cy="460" r="20" fill="#6c757d" />
+  <text x="120" y="466" font-family="Arial" font-size="14" fill="white" text-anchor="middle">JD</text>
+  <text x="150" y="465" font-family="Arial" font-size="16" fill="#212529">johndoe</text>
+  <text x="220" y="465" font-family="Arial" font-size="14" fill="#28a745">(You)</text>
+  
+  <text x="550" y="465" font-family="Arial" font-size="16" fill="#212529">12/45</text>
+  <rect x="630" y="453" width="120" height="16" rx="8" fill="#e9ecef" />
+  <rect x="630" y="453" width="32" height="16" rx="8" fill="#007bff" />
+  
+  <text x="800" y="465" font-family="Arial" font-size="16" fill="#212529">Just now</text>
+  
+  <text x="1070" y="465" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">850</text>
+  
+  <!-- Fifth place -->
+  <rect x="40" y="490" width="1120" height="60" fill="#f8f9fa" />
+  <text x="70" y="525" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">5</text>
+  
+  <circle cx="120" cy="520" r="20" fill="#6c757d" />
+  <text x="120" y="526" font-family="Arial" font-size="14" fill="white" text-anchor="middle">AB</text>
+  <text x="150" y="525" font-family="Arial" font-size="16" fill="#212529">alice_bob</text>
+  
+  <text x="550" y="525" font-family="Arial" font-size="16" fill="#212529">10/45</text>
+  <rect x="630" y="513" width="120" height="16" rx="8" fill="#e9ecef" />
+  <rect x="630" y="513" width="27" height="16" rx="8" fill="#6c757d" />
+  
+  <text x="800" y="525" font-family="Arial" font-size="16" fill="#212529">3 hours ago</text>
+  
+  <text x="1070" y="525" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">720</text>
+  
+  <!-- More users -->
+  <rect x="40" y="550" width="1120" height="60" fill="white" />
+  <text x="70" y="585" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">6</text>
+  
+  <circle cx="120" cy="580" r="20" fill="#6c757d" />
+  <text x="120" y="586" font-family="Arial" font-size="14" fill="white" text-anchor="middle">TS</text>
+  <text x="150" y="585" font-family="Arial" font-size="16" fill="#212529">tech_savvy</text>
+  
+  <text x="550" y="585" font-family="Arial" font-size="16" fill="#212529">9/45</text>
+  <rect x="630" y="573" width="120" height="16" rx="8" fill="#e9ecef" />
+  <rect x="630" y="573" width="24" height="16" rx="8" fill="#6c757d" />
+  
+  <text x="800" y="585" font-family="Arial" font-size="16" fill="#212529">5 hours ago</text>
+  
+  <text x="1070" y="585" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">650</text>
+  
+  <!-- Stats section -->
+  <rect x="40" y="640" width="1120" height="120" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" />
+  <text x="60" y="670" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">Leaderboard Stats</text>
+  
+  <rect x="60" y="690" width="250" height="60" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="80" y="715" font-family="Arial" font-size="14" fill="#6c757d">Total Participants</text>
+  <text x="80" y="740" font-family="Arial" font-size="24" font-weight="bold" fill="#212529">127</text>
+  
+  <rect x="330" y="690" width="250" height="60" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="350" y="715" font-family="Arial" font-size="14" fill="#6c757d">Challenges Solved</text>
+  <text x="350" y="740" font-family="Arial" font-size="24" font-weight="bold" fill="#212529">1,856</text>
+  
+  <rect x="600" y="690" width="250" height="60" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="620" y="715" font-family="Arial" font-size="14" fill="#6c757d">Most Popular Challenge</text>
+  <text x="620" y="740" font-family="Arial" font-size="18" font-weight="bold" fill="#212529">SQL Injection Basics</text>
+  
+  <rect x="870" y="690" width="250" height="60" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="890" y="715" font-family="Arial" font-size="14" fill="#6c757d">Your Rank</text>
+  <text x="890" y="740" font-family="Arial" font-size="24" font-weight="bold" fill="#007bff">4th</text>
+  
+  <!-- Pagination -->
+  <rect x="550" y="780" width="40" height="40" rx="5" fill="#007bff" />
+  <text x="570" y="805" font-family="Arial" font-size="18" fill="white" text-anchor="middle">1</text>
+  
+  <rect x="600" y="780" width="40" height="40" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="620" y="805" font-family="Arial" font-size="18" fill="#6c757d" text-anchor="middle">2</text>
+  
+  <rect x="650" y="780" width="40" height="40" rx="5" fill="white" stroke="#dee2e6" stroke-width="1" />
+  <text x="670" y="805" font-family="Arial" font-size="18" fill="#6c757d" text-anchor="middle">3</text>
+</svg>

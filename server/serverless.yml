@@ -1,0 +1,71 @@
+service: ctf-platform-api
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  memorySize: 256
+  timeout: 30
+  environment:
+    NODE_ENV: ${opt:stage, 'dev'}
+    MONGODB_URI: ${ssm:/ctf-platform/${self:provider.stage}/mongodb_uri}
+    JWT_SECRET: ${ssm:/ctf-platform/${self:provider.stage}/jwt_secret}
+    AWS_S3_BUCKET: ${ssm:/ctf-platform/${self:provider.stage}/s3_bucket}
+    AWS_S3_URL: ${ssm:/ctf-platform/${self:provider.stage}/s3_url}
+    CLIENT_URL: ${ssm:/ctf-platform/${self:provider.stage}/client_url}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:DeleteObject
+          Resource: arn:aws:s3:::${ssm:/ctf-platform/${self:provider.stage}/s3_bucket}/*
+
+functions:
+  api:
+    handler: lambda/api/handler.handler
+    events:
+      - httpApi:
+          path: /api/{proxy+}
+          method: ANY
+    environment:
+      SERVICE_NAME: ctf-platform-api
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-offline
+  - serverless-webpack
+
+package:
+  individually: true
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+  serverless-offline:
+    httpPort: 5000
+    lambdaPort: 3002
+    noPrependStageInUrl: true
+    useChildProcesses: true
+
+resources:
+  Resources:
+    ChallengeFilesBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${ssm:/ctf-platform/${self:provider.stage}/s3_bucket}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+              AllowedOrigins:
+                - ${ssm:/ctf-platform/${self:provider.stage}/client_url}
+              MaxAge: 3000
