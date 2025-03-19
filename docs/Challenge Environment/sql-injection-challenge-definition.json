@@ -1,0 +1,61 @@
+{
+  "id": "challenge-sql-injection-basic",
+  "title": "SQL Injection: Breaking Authentication",
+  "description": "# SQL Injection: Breaking Authentication\n\nWelcome to your first web application security challenge! You've been given access to a login page for a company's internal portal. Your mission is to gain admin access without knowing the password.\n\n## Scenario\n\nSituation: You're a security consultant hired to assess the security of XYZ Corp's internal web portal. \n\nYour objective: Gain administrative access by exploiting vulnerabilities in the login mechanism.\n\n## Target Information\n\nA web application is available at the URL provided in your resources. The application contains a basic login form that authenticates users against a database.\n\n## Your Task\n\n1. Identify vulnerabilities in the login form\n2. Exploit SQL injection to bypass authentication\n3. Access the admin dashboard\n4. Find the secret flag stored in the admin's account\n5. Submit the flag in the format CTF{...}\n\n## Success Criteria\n\nYou will successfully complete this challenge when you submit the correct flag, which is only accessible to users with admin privileges.\n\nGood luck, and remember to think about how SQL queries might be constructed on the server side!",
+  
+  "category": "Web Exploitation",
+  "difficulty": 2,
+  "points": 100,
+  "author": "SecurityMaster",
+  "successRate": 68,
+  
+  "templateUrl": "s3://ctf-platform-assets-dev/challenge-templates/sql-injection-basic.yml",
+  "validationStrategy": "exact-match",
+  
+  "hints": [
+    {
+      "content": "Think about how the application might construct the SQL query. What happens if you include special characters in your input?",
+      "cost": 10
+    },
+    {
+      "content": "Try using a single quote (') in the username field to see if it causes an error. This can help confirm if the application is vulnerable to SQL injection.",
+      "cost": 15
+    },
+    {
+      "content": "SQL injection often involves manipulating the WHERE clause of a query. Can you construct input that makes the WHERE condition always evaluate to true?",
+      "cost": 20
+    },
+    {
+      "content": "A common SQL injection payload for login forms is: `' OR '1'='1`. Try using this as the username, with any password.",
+      "cost": 25
+    },
+    {
+      "content": "After gaining access, look for a 'secrets' or 'profile' section in the admin dashboard. The flag may be stored there.",
+      "cost": 20
+    }
+  ],
+  
+  "guide": "## SQL Injection Challenge Guide\n\n### Understanding the Vulnerability\n\nSQL injection is a web security vulnerability that allows an attacker to interfere with the queries that an application makes to its database. In this challenge, the login form is vulnerable because it directly incorporates user input into an SQL query without proper sanitization.\n\n### Typical Login Query\n\nA vulnerable login system might use a query like this:\n\n```sql\nSELECT * FROM users WHERE username = 'INPUT_USERNAME' AND password = 'INPUT_PASSWORD'\n```\n\n### Exploitation Steps\n\n1. **Test for vulnerability**: Enter a single quote (') in the username field. If this causes an error, the application is likely vulnerable.\n\n2. **Exploit the vulnerability**: Input the following in the username field:\n   ```\n   ' OR '1'='1\n   ```\n   And anything in the password field.\n\n3. **Understanding the exploit**: This transforms the query into:\n   ```sql\n   SELECT * FROM users WHERE username = '' OR '1'='1' AND password = 'anything'\n   ```\n   Since `'1'='1'` is always true, this returns all users, typically authenticating as the first user in the database (often an admin).\n\n4. **Finding the flag**: Once logged in as admin, navigate through the admin dashboard. Look for sections labeled 'Profile', 'Secrets', or 'Settings'. The flag is typically stored in a location only accessible to administrators.\n\n### Prevention Techniques\n\nFor educational purposes, here's how developers can prevent SQL injection:\n\n1. Use parameterized queries/prepared statements\n2. Implement input validation\n3. Apply the principle of least privilege to database accounts\n4. Use ORM (Object-Relational Mapping) frameworks\n\n### Additional Resources\n\n- [OWASP SQL Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)\n- [PortSwigger SQL Injection Tutorial](https://portswigger.net/web-security/sql-injection)",
+  
+  "requirements": {
+    "cpu": 1,
+    "memory": 2,
+    "storage": 20,
+    "duration": 3600
+  },
+  
+  "resources": [
+    {
+      "title": "OWASP SQL Injection",
+      "url": "https://owasp.org/www-community/attacks/SQL_Injection"
+    },
+    {
+      "title": "SQL Injection Cheat Sheet",
+      "url": "https://portswigger.net/web-security/sql-injection/cheat-sheet"
+    }
+  ],
+  
+  "tags": ["sql-injection", "web-security", "authentication-bypass", "beginner"],
+  
+  "prerequisites": []
+}

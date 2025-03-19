@@ -1,0 +1,456 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CTF Platform - SQL Injection Basic Challenge Environment'
+
+Parameters:
+  EnvironmentId:
+    Type: String
+    Description: Unique identifier for this challenge environment
+  
+  ChallengeId:
+    Type: String
+    Description: Identifier for the challenge type
+    
+  UserPoolId:
+    Type: String
+    Description: Cognito User Pool ID for user authentication
+    
+  ExpirationTimestamp:
+    Type: Number
+    Description: Unix timestamp when this environment should expire
+
+Resources:
+  # VPC for isolation
+  ChallengeVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub ctf-challenge-vpc-${EnvironmentId}
+
+  # Public subnet
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ChallengeVPC
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [0, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: !Sub ctf-challenge-public-subnet-${EnvironmentId}
+
+  # Internet Gateway
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub ctf-challenge-igw-${EnvironmentId}
+
+  # Attach gateway to VPC
+  GatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref ChallengeVPC
+      InternetGatewayId: !Ref InternetGateway
+
+  # Route table
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ChallengeVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ctf-challenge-rt-${EnvironmentId}
+
+  # Public route
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: GatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  # Associate route table with subnet
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  # Security group for web server
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for vulnerable web application
+      VpcId: !Ref ChallengeVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ctf-challenge-web-sg-${EnvironmentId}
+
+  # Security group for database
+  DatabaseSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for vulnerable database
+      VpcId: !Ref ChallengeVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref WebServerSecurityGroup
+      Tags:
+        - Key: Name
+          Value: !Sub ctf-challenge-db-sg-${EnvironmentId}
+
+  # RDS MySQL instance (vulnerable configuration)
+  ChallengeDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: !Sub ctf-db-${EnvironmentId}
+      Engine: mysql
+      EngineVersion: 5.7
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword: !Sub 'Challenge-${EnvironmentId}'
+      DBName: vulnerable_app
+      VPCSecurityGroups:
+        - !GetAtt DatabaseSecurityGroup.GroupId
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      PubliclyAccessible: false
+      BackupRetentionPeriod: 0
+      DeletionProtection: false
+      Tags:
+        - Key: EnvironmentId
+          Value: !Ref EnvironmentId
+        - Key: ChallengeId
+          Value: !Ref ChallengeId
+
+  # DB Subnet Group
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for challenge database
+      SubnetIds:
+        - !Ref PublicSubnet
+        - !Ref PrivateSubnet
+      Tags:
+        - Key: Name
+          Value: !Sub ctf-challenge-db-subnet-group-${EnvironmentId}
+
+  # Private subnet for DB
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ChallengeVPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: !Sub ctf-challenge-private-subnet-${EnvironmentId}
+
+  # Web server running vulnerable application
+  WebServerInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0c55b159cbfafe1f0 # Amazon Linux 2 AMI (update with appropriate AMI for your region)
+      KeyName: ctf-challenge-key  # You should have this key pair created
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          GroupSet:
+            - !Ref WebServerSecurityGroup
+          SubnetId: !Ref PublicSubnet
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          yum update -y
+          yum install -y httpd php php-mysqli mysql git
+
+          # Install necessary packages
+          amazon-linux-extras install -y lamp-mariadb10.2-php7.2 php7.2
+          yum install -y httpd mariadb-server
+
+          # Start services
+          systemctl start httpd
+          systemctl enable httpd
+
+          # Clone vulnerable application
+          cd /var/www/html
+          git clone https://github.com/your-org/vulnerable-login-app.git .
+
+          # Configure the application
+          cat > /var/www/html/config.php << 'EOL'
+          <?php
+          define('DB_SERVER', '${ChallengeDatabase.Endpoint.Address}');
+          define('DB_USERNAME', 'admin');
+          define('DB_PASSWORD', 'Challenge-${EnvironmentId}');
+          define('DB_NAME', 'vulnerable_app');
+          
+          // The secret flag
+          define('FLAG', 'CTF{sql_1nj3ct10n_m4st3r_${EnvironmentId}}');
+          ?>
+          EOL
+
+          # Set permissions
+          chown -R apache:apache /var/www/html/
+
+          # Setup database with vulnerable schema and data
+          mysql -h ${ChallengeDatabase.Endpoint.Address} -u admin -p'Challenge-${EnvironmentId}' vulnerable_app << 'EOL'
+          CREATE TABLE users (
+            id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            username VARCHAR(50) NOT NULL UNIQUE,
+            password VARCHAR(255) NOT NULL,
+            role VARCHAR(20) DEFAULT 'user'
+          );
+          
+          INSERT INTO users (username, password, role) VALUES 
+            ('admin', 'S3cur3P4ssw0rd!', 'admin'),
+            ('john', 'password123', 'user'),
+            ('alice', 'qwerty', 'user');
+            
+          CREATE TABLE secrets (
+            id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            user_id INT NOT NULL,
+            secret_content TEXT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+          );
+          
+          INSERT INTO secrets (user_id, secret_content) VALUES 
+            (1, 'The flag is: CTF{sql_1nj3ct10n_m4st3r_${EnvironmentId}}');
+          EOL
+
+          # Create a Lambda function to clean up environment after expiration
+          aws lambda create-function \
+            --function-name cleanup-${EnvironmentId} \
+            --runtime nodejs14.x \
+            --role arn:aws:iam::${AWS::AccountId}:role/ctf-challenge-cleanup-role \
+            --handler index.handler \
+            --timeout 300 \
+            --environment Variables={STACK_NAME=ctf-challenge-${EnvironmentId}} \
+            --code ZipFile="exports.handler = async (event) => { 
+              const AWS = require('aws-sdk');
+              const cloudformation = new AWS.CloudFormation();
+              
+              await cloudformation.deleteStack({
+                StackName: process.env.STACK_NAME
+              }).promise();
+              
+              return { 
+                statusCode: 200,
+                body: JSON.stringify('Cleanup complete')
+              };
+            }"
+
+          # Schedule cleanup
+          aws events put-rule \
+            --name cleanup-rule-${EnvironmentId} \
+            --schedule-expression "cron(0 * * * ? *)" \
+            --description "Check for expired challenges"
+
+          aws events put-targets \
+            --rule cleanup-rule-${EnvironmentId} \
+            --targets "Id"="1","Arn"="arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:cleanup-${EnvironmentId}"
+      Tags:
+        - Key: Name
+          Value: !Sub ctf-challenge-web-${EnvironmentId}
+        - Key: EnvironmentId
+          Value: !Ref EnvironmentId
+        - Key: ChallengeId
+          Value: !Ref ChallengeId
+        - Key: ExpirationTimestamp
+          Value: !Ref ExpirationTimestamp
+
+  # CloudWatch Dashboard for monitoring
+  ChallengeDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub challenge-dashboard-${EnvironmentId}
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "x": 0,
+              "y": 0,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/EC2", "CPUUtilization", "InstanceId", "${WebServerInstance}" ]
+                ],
+                "period": 300,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "Web Server CPU"
+              }
+            },
+            {
+              "type": "metric",
+              "x": 12,
+              "y": 0,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", "ctf-db-${EnvironmentId}" ]
+                ],
+                "period": 300,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "Database CPU"
+              }
+            }
+          ]
+        }
+
+  # Lambda function to validate the user's solution
+  SolutionValidator:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub validator-${EnvironmentId}
+      Runtime: nodejs14.x
+      Handler: index.handler
+      Timeout: 10
+      Role: !GetAtt ValidatorRole.Arn
+      Environment:
+        Variables:
+          EXPECTED_FLAG: !Sub 'CTF{sql_1nj3ct10n_m4st3r_${EnvironmentId}}'
+          CHALLENGE_ID: !Ref ChallengeId
+          ENVIRONMENT_ID: !Ref EnvironmentId
+      Code:
+        ZipFile: |
+          exports.handler = async (event) => {
+            const { solution } = JSON.parse(event.body);
+            const expectedFlag = process.env.EXPECTED_FLAG;
+            
+            if (solution.trim() === expectedFlag) {
+              return {
+                statusCode: 200,
+                body: JSON.stringify({
+                  success: true,
+                  message: "Congratulations! You have successfully found the SQL injection vulnerability and extracted the flag.",
+                  points: 100
+                })
+              };
+            }
+            
+            return {
+              statusCode: 200,
+              body: JSON.stringify({
+                success: false,
+                message: "Incorrect flag. Try again! Hint: The flag is stored in the 'secrets' table for the admin user."
+              })
+            };
+          }
+
+  # IAM Role for validator
+  ValidatorRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  # API Gateway for validator
+  ValidatorApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub validator-api-${EnvironmentId}
+      Description: API for challenge solution validation
+
+  # API Resource
+  ValidatorResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref ValidatorApi
+      ParentId: !GetAtt ValidatorApi.RootResourceId
+      PathPart: validate
+
+  # API Method
+  ValidatorMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref ValidatorApi
+      ResourceId: !Ref ValidatorResource
+      HttpMethod: POST
+      AuthorizationType: COGNITO_USER_POOLS
+      AuthorizerId: !Ref CognitoAuthorizer
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SolutionValidator.Arn}/invocations
+
+  # API Deployment
+  ValidatorDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: ValidatorMethod
+    Properties:
+      RestApiId: !Ref ValidatorApi
+      StageName: v1
+
+  # Lambda Permission
+  ValidatorPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref SolutionValidator
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ValidatorApi}/*/POST/validate
+
+  # Cognito Authorizer
+  CognitoAuthorizer:
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      Name: CognitoAuthorizer
+      RestApiId: !Ref ValidatorApi
+      Type: COGNITO_USER_POOLS
+      IdentitySource: method.request.header.Authorization
+      ProviderARNs:
+        - !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${UserPoolId}
+
+Outputs:
+  WebsiteURL:
+    Description: URL of the vulnerable web application
+    Value: !Sub http://${WebServerInstance.PublicDnsName}
+
+  DatabaseEndpoint:
+    Description: Endpoint of the MySQL database
+    Value: !GetAtt ChallengeDatabase.Endpoint.Address
+
+  DatabasePort:
+    Description: Port of the MySQL database
+    Value: !GetAtt ChallengeDatabase.Endpoint.Port
+
+  ValidatorEndpoint:
+    Description: Endpoint for submitting solutions
+    Value: !Sub https://${ValidatorApi}.execute-api.${AWS::Region}.amazonaws.com/v1/validate
+
+  SSHCommand:
+    Description: Command to SSH into the web server
+    Value: !Sub ssh -i ctf-challenge-key.pem ec2-user@${WebServerInstance.PublicDnsName}
+
+  Flag:
+    Description: The flag for this challenge (for admin reference)
+    Value: !Sub CTF{sql_1nj3ct10n_m4st3r_${EnvironmentId}}
